@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WinTLS.c">
+    <ClCompile Include="tls.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

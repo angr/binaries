@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BC5CD955-2DB3-4E0D-9C2C-19833ABF09A5}</ProjectGuid>
+    <ProjectGuid>{78895415-1E2A-446C-9F63-51D01342966E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>WindowsTLS</RootNamespace>
+    <RootNamespace>TLS</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -142,7 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="WinTLS.c" />
+    <ClCompile Include="tls.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
