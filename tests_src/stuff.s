@@ -36,7 +36,7 @@ self_modifying:
     xor edx, edx
     sub esi, 6
 _loop_start:
-    cmp edx, 6
+    cmp edx, 5
     jz _loop_end
 
     mov edi, ebp
