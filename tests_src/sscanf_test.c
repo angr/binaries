@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 int main()
 {
@@ -37,7 +39,7 @@ int main()
             puts("Nope x");
         }
     } else if (swch == 'u') {
-        sscanf(test, "%u", &val);
+        sscanf(test, "%09u", &val);
         if (val == 0xaaaa) {
             if (test[0] == '0' && test[1] != 'x') {
                 puts("base 8 worked");
