@@ -1,0 +1,6 @@
+tests/* binary
+tests_data/* binary
+tests_src/* text=auto
+.gitignore text=auto
+.gitattributes text=auto
+README.md text=auto
