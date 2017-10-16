@@ -1,7 +1,7 @@
 /*
- * File Name : loop.c
+ * File Name : various_loops.c
  * Creation Date : 12-10-2017
- * Last Modified : ven. 13 oct. 2017 16:39:27 CEST
+ * Last Modified : lun. 16 oct. 2017 11:45:35 CEST
  * 
  * Copyright (C) Son Tuan Vu <son-tuan.vu@lip6.fr>
  *
@@ -23,6 +23,7 @@
 
 int a[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 int b[9];
+int dummy;
 
 void nullify()
 {
@@ -95,7 +96,6 @@ void break_for_loop()
     int j;
     for (i = 0; i < 16; i++) {
         if (i == 9) {
-            j = i;
             break;
         }
         b[i] = a[i];
@@ -109,11 +109,20 @@ void break_do_while_loop()
     do {
         b[i] = a[i];
         if (i == 8) {
-            j = i;
             break;
         }
         i++;
     } while (i < 16);
+}
+
+void symbolic_loop()
+{
+    int i = 0;
+    for (i = 0; i < 9; i++) {
+        if (dummy == i)
+            break;
+        b[i] = a[i];
+    }
 }
 
 void main()
@@ -133,4 +142,6 @@ void main()
     break_for_loop();
     nullify();
     break_do_while_loop();
+    nullify();
+    symbolic_loop();
 }
