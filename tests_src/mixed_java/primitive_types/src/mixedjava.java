@@ -30,6 +30,7 @@ class MixedJava {
 		l0 = native_boolean(l0);
 		// true
 		l0 = native_boolean(l0);
+		break_();
 	}
 	
 	public static void test_byte(){
@@ -46,6 +47,7 @@ class MixedJava {
 		b0 = 0;
 		b1 = native_byte(b0);
 		b2 = (byte) (b0 + b1);
+		break_();
 	}
 	
 	public static void test_char(){
@@ -61,6 +63,7 @@ class MixedJava {
 		c0 = 0;
 		c1 = native_char(c0);
 		c2 = (char) (c0 + c1);
+		break_();
 	}
 	
 	public static void test_short(){
@@ -78,6 +81,7 @@ class MixedJava {
 		// (0 / 4) = 0
 		s0 = 0;
 		s1 = native_short(s0);
+		break_();
 	}
 	
 	public static void test_int(){
@@ -94,6 +98,7 @@ class MixedJava {
 		// -0x80000000 - 1 => 0x7fffffff
 		i0 = -2147483648;
 		i1 = i0 - 1;
+		break_();
 	}
 	
 	public static void test_long(){
@@ -103,7 +108,14 @@ class MixedJava {
 		l1 = native_long(l0);
 		//  -1 + 2 = 1
 		l0 = -1;
-		l1 = native_long(l0);		
+		l1 = native_long(l0);
+		break_();
+	}
+
+	public static void break_(){
+	/* Add an additional basic block to the function, so the results
+		of the last statements are not deleted, when method returns.
+	*/
 	}
 
 }
