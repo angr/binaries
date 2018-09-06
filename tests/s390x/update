@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e -u -x
+cd "$(dirname "$0")"
+declare -a exes
+for c in ../../tests_src/*.c; do
+        exe=$(basename "$c")
+        exe="${exe%.*}"
+        if grep libcgc.h <"$c" >/dev/null 2>&1; then
+                # libcgc does not work on s390x
+                continue
+        fi
+        gcc -march=zEC12 -O3 -o "$exe" "$c"
+        exes+=("$exe")
+done
+for so in $(ldd "${exes[@]}" | perl -ne 'if (m!(/[^ ]+)!) { print "$1\n"; }' | sort -u); do
+        cp "$so" .
+done
