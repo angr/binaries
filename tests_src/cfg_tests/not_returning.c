@@ -9,10 +9,19 @@ void function_c()
 {
     /* Calls the exit syscall, and does not return */
 
+#if defined(__x86_64__)
     asm volatile (
             "mov $60, %rax\n"
             "xor %rdi, %rdi\n"
             "syscall");
+#elif defined(__s390x__)
+    asm volatile (
+            "lghi %r1, 1\n"
+            "xr %r2, %r2\n"
+            "svc 0\n");
+#else
+#error Unsupported architecture
+#endif
 }
 
 void function_a()
