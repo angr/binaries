@@ -8,7 +8,7 @@ _start:
 	pop rax; ret
 	pop rdx; ret
 	mov qword ptr [rax + 8], rdx; ret
-	pop rax; ret
+	int3; int3
 	pop rdi; ret
 	pop rdx; ret
 	pop rsi; ret
