@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include "dowork.h"
 
 int main() {
 	char * src = "somestring";
@@ -12,7 +13,9 @@ int main() {
 			printf("Copied string!\n");
 		}
 	}
+
+	return do_work(42);
 }
 
-// gcc -Wall -o test_preload test_preload.c
-// LD_PRELOAD=./strcpy_lib.so ./test_preload
+// gcc test_preload.c -Wall -ldowork -Wl,--warn-unresolved-symbols -o test_preload
+// LD_PRELOAD=./test_preload_strcpy_lib.so ./test_preload
