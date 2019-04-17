@@ -5,12 +5,27 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+/*
+  
+  Compilation:
+  gcc -o network_overflow network_overflow.c  -fno-stack-protector -no-pie -z execstack
+  objcopy network_overflow --set-section-flags .data=alloc,load,code,data
+  
+  This makes it super easy for rex to exploit in the face of ASLR. 
 
+ */
+
+// a bit of a cheat to allow us to jump here, compilation options will ensure that it is writable and executable. 
+char global[2048];
 
 int talk(int fd)
 {
+   int ret;
    char buf[100];
-   recv(fd, buf, 2048, 0);
+   ret = recv(fd, buf, 2048, 0);
+
+   // coppy the contents of buf into the global variable. 
+   memcpy(global, buf, ret);
    return 0;
 }
 
