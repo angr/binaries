@@ -7,12 +7,13 @@ int main()
 {
     char swch;
     char test[100] = {0};
-    unsigned int val;
+    unsigned int val, val2;
     read(0, &swch, 1);
     read(0, test, 80);
 
     if (swch == 'x') {
         sscanf(test, "%07x", &val);
+        sscanf(test, "%02x", &val2);
         if (val == 0xaaaa) {
             if (strncmp(test, "0x", 2) == 0) {
                 puts("0x worked");
@@ -35,6 +36,8 @@ int main()
             } else {
                 puts("shouldn't happen");
             }
+        } else if (val2 == 0xaa) {
+            puts("base 16 length 2 worked");
         } else {
             puts("Nope x");
         }
