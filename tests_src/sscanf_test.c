@@ -37,7 +37,11 @@ int main()
                 puts("shouldn't happen");
             }
         } else if (val2 == 0xaa) {
-            puts("base 16 length 2 worked");
+            if (test[0] == '+' || test[0] == '-' || test[0] == '0') {
+                puts("shouldn't happen");
+            } else {
+                puts("base 16 length 2 worked");
+            }
         } else {
             puts("Nope x");
         }
