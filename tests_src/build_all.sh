@@ -4,6 +4,7 @@ NAME=$1
 
 powerpc64-unknown-linux-gnu-gcc -O0 $NAME.c -o ../tests/ppc64/$NAME
 powerpc-linux-gnu-gcc-4.8 -O0 $NAME.c -o ../tests/ppc/$NAME
+powerpc64le-linux-gnu-gcc -O0 $NAME.c -o ../tests/ppc64le/$NAME
 mipsel-unknown-linux-gnu-gcc -O0 $NAME.c -o ../tests/mipsel/$NAME
 #mips-malta-linux-gnu-gcc -O0 $NAME.c -o ../tests/mips/$NAME
 mips-unknown-linux-gnu-gcc -O0 $NAME.c -o ../tests/mips/$NAME
