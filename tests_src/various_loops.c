@@ -2,7 +2,7 @@
 
 int a[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 int b[9];
-int dummy;
+int dummy=9;
 
 void nullify()
 {
@@ -96,7 +96,7 @@ void break_do_while_loop()
 
 void symbolic_loop()
 {
-    int i = 0;
+    int i;
     for (i = 0; i < 9; i++) {
         if (dummy == i)
             break;
