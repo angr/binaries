@@ -42,7 +42,7 @@ int main(int argc, char** argv)
    int opt = 1;
    struct sockaddr_in address;
    int new_client;
-   int addrlen;
+   size_t addrlen;
 
    server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -57,6 +57,7 @@ int main(int argc, char** argv)
    }
 
    listen(server_fd, 10);
+   addrlen = sizeof(address);
    new_client = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
 
    talk(new_client);
