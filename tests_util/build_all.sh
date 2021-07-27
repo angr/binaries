@@ -11,7 +11,7 @@ fi
 CFLAGS=""
 if [ "$NAME" == "network_overflow" ]; then
 	echo "WARNING: making the stack executable for the network_overflow binary."
-	CFLAGS="$CFLAGS -z execstack -fno-stack-protector"
+	CFLAGS="$CFLAGS -z execstack -fno-stack-protector -fno-PIC -fno-PIE -no-pie"
 fi
 powerpc64-linux-gnu-gcc $CFLAGS -O0 $NAME.c -o ../tests/ppc64/$NAME
 powerpc-linux-gnu-gcc $CFLAGS -O0 $NAME.c -o ../tests/ppc/$NAME
