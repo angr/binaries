@@ -1,0 +1,77 @@
+{
+    "binary": "Traffic_Light_addsensor_x86-64.so",
+    "software": "beremiz",
+    "variable_base_addr": "0x44be80",
+    "time_addr": "0x448550",
+    "variables": [
+        {
+            "name": "SWITCH_BUTTON",
+            "address": "0x4",
+            "size": 1,
+            "type": "input"
+        },
+        {
+            "name": "SWITCH_BUTTON",
+            "address": "0x4",
+            "size": 1,
+            "type": "output"
+        },
+        {
+            "name": "PEDESTRIAN_BUTTON",
+            "address": "0x6",
+            "size": 1,
+            "type": "input"
+        },
+        {
+            "name": "LIGHT_LEVEL",
+            "address": "0x1b0",
+            "size": 4,
+            "sort": "float",
+            "type": "config"
+        },
+        {
+            "name": "MIN_WALK_TIME",
+            "address": "0x1c0",
+            "size": 8,
+            "sort": "int",
+            "type": "config"
+        },
+        {
+            "name": "PED_GREEN_TIME",
+            "address": "0x1d8",
+            "size": 8,
+            "sort": "int",
+            "type": "config"
+        },
+        {
+            "name": "RED_LIGHT",
+            "address": "0x8",
+            "size": 1,
+            "type": "output"
+        },
+        {
+            "name": "ORANGE_LIGHT",
+            "address": "0xa",
+            "size": 1,
+            "type": "output"
+        },
+        {
+            "name": "GREEN_LIGHT",
+            "address": "0xc",
+            "size": 1,
+            "type": "output"
+        },
+        {
+            "name": "PEDESTRIAN_RED_LIGHT",
+            "address": "0xe",
+            "size": 1,
+            "type": "output"
+        },
+        {
+            "name": "PEDESTRIAN_GREEN_LIGHT",
+            "address": "0x10",
+            "size": 1,
+            "type": "output"
+        }
+    ]
+}
