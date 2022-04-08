@@ -1,0 +1,204 @@
+========= Movie Rental Service v0.1 =========
+   . . . Initializing the inventory . . .
+         (movie info from IMDb.com)
+=============================================
+1. List movies
+2. Rent movie
+3. Return movie
+4. Admin mode
+5. Exit
+
+Choice: 
+Movies (Full)
+--------------
+[1] The Shawshank Redemption (1994, R) - Other [93/100]
+  => Two imprisoned men bond over a number of years, finding solace and eventual
+     redemption through acts of common decency.
+[2] The Godfather (1972, R) - Other [92/100]
+  => The aging patriarch of an organized crime dynasty transfers control of his clandestine
+     empire to his reluctant son.
+[3] The Dark Knight (2008, PG13) - Action [90/100]
+  => When Batman, Gordon have Harvey Dent launch an assault on the mob, they let the clown
+     out of the box, the Joker, bent on turning Gotham on itself and bringing any heroes
+     down to his level.
+[4] Inception (2010, PG13) - Action [88/100]
+  => A thief who steals corporate secrets through use of dream-sharing technology is given the
+     inverse task of planting an idea into the mind of a CEO.
+[5] The Matrix (1999, R) - Action [87/100]
+  => A computer hacker learns from mysterious rebels about the true nature of his reality and
+     his role in the war against its controllers.
+[6] Modern Times (1936, G) - Comedy [86/100]
+  => The Tramp struggles to live in modern industrial society with the help of a young
+     homeless woman.
+[7] About Time (2013, R) - Romance [78/100]
+  => At the age of 21, Tim discovers he can travel in time and change what happens and has
+     happened in his own life. His decision to make his world a better place by getting
+     a girlfriend turns out not to be as easy as you might think.
+[8] Yes Man (2008, PG13) - Comedy [69/100]
+  => A guy challenges himself to say "yes" to everything for an entire year.
+[9] The Conjuring (2013, R) - Horror [75/100]
+  => Paranormal investigators Ed and Lorraine Warren work to help a family terrorized
+     by a dark presence in their farmhouse.
+[10] The Lion King (1994, G) - Other [85/100]
+  => Lion cub and future king Simba searches for his identity. His eagerness to please others
+     and penchant for testing his boundaries sometimes gets him into trouble.
+--------------
+10 movie(s)
+Enter movie id: Successfully rented [The Shawshank Redemption]! Enjoy!
+
+1. List movies
+2. Rent movie
+3. Return movie
+4. Admin mode
+5. Exit
+
+Choice: username: password: [ERROR] Permission Denied: Wrong credentials
+
+1. Add movie
+2. Remove movie
+3. Update movie
+4. Quit admin mode
+
+Choice: 
+Movies (Full)
+--------------
+[1] The Shawshank Redemption (1994, R) - Other [93/100]
+  => Two imprisoned men bond over a number of years, finding solace and eventual
+     redemption through acts of common decency.
+[2] The Godfather (1972, R) - Other [92/100]
+  => The aging patriarch of an organized crime dynasty transfers control of his clandestine
+     empire to his reluctant son.
+[3] The Dark Knight (2008, PG13) - Action [90/100]
+  => When Batman, Gordon have Harvey Dent launch an assault on the mob, they let the clown
+     out of the box, the Joker, bent on turning Gotham on itself and bringing any heroes
+     down to his level.
+[4] Inception (2010, PG13) - Action [88/100]
+  => A thief who steals corporate secrets through use of dream-sharing technology is given the
+     inverse task of planting an idea into the mind of a CEO.
+[5] The Matrix (1999, R) - Action [87/100]
+  => A computer hacker learns from mysterious rebels about the true nature of his reality and
+     his role in the war against its controllers.
+[6] Modern Times (1936, G) - Comedy [86/100]
+  => The Tramp struggles to live in modern industrial society with the help of a young
+     homeless woman.
+[7] About Time (2013, R) - Romance [78/100]
+  => At the age of 21, Tim discovers he can travel in time and change what happens and has
+     happened in his own life. His decision to make his world a better place by getting
+     a girlfriend turns out not to be as easy as you might think.
+[8] Yes Man (2008, PG13) - Comedy [69/100]
+  => A guy challenges himself to say "yes" to everything for an entire year.
+[9] The Conjuring (2013, R) - Horror [75/100]
+  => Paranormal investigators Ed and Lorraine Warren work to help a family terrorized
+     by a dark presence in their farmhouse.
+[10] The Lion King (1994, G) - Other [85/100]
+  => Lion cub and future king Simba searches for his identity. His eagerness to please others
+     and penchant for testing his boundaries sometimes gets him into trouble.
+--------------
+10 movie(s)
+Enter movie id: Successfully removed the movie!
+
+1. Add movie
+2. Remove movie
+3. Update movie
+4. Quit admin mode
+
+Choice: 
+Movies (Full)
+--------------
+[1] The Godfather (1972, R) - Other [92/100]
+  => The aging patriarch of an organized crime dynasty transfers control of his clandestine
+     empire to his reluctant son.
+[2] The Dark Knight (2008, PG13) - Action [90/100]
+  => When Batman, Gordon have Harvey Dent launch an assault on the mob, they let the clown
+     out of the box, the Joker, bent on turning Gotham on itself and bringing any heroes
+     down to his level.
+[3] Inception (2010, PG13) - Action [88/100]
+  => A thief who steals corporate secrets through use of dream-sharing technology is given the
+     inverse task of planting an idea into the mind of a CEO.
+[4] The Matrix (1999, R) - Action [87/100]
+  => A computer hacker learns from mysterious rebels about the true nature of his reality and
+     his role in the war against its controllers.
+[5] Modern Times (1936, G) - Comedy [86/100]
+  => The Tramp struggles to live in modern industrial society with the help of a young
+     homeless woman.
+[6] About Time (2013, R) - Romance [78/100]
+  => At the age of 21, Tim discovers he can travel in time and change what happens and has
+     happened in his own life. His decision to make his world a better place by getting
+     a girlfriend turns out not to be as easy as you might think.
+[7] Yes Man (2008, PG13) - Comedy [69/100]
+  => A guy challenges himself to say "yes" to everything for an entire year.
+[8] The Conjuring (2013, R) - Horror [75/100]
+  => Paranormal investigators Ed and Lorraine Warren work to help a family terrorized
+     by a dark presence in their farmhouse.
+[9] The Lion King (1994, G) - Other [85/100]
+  => Lion cub and future king Simba searches for his identity. His eagerness to please others
+     and penchant for testing his boundaries sometimes gets him into trouble.
+--------------
+9 movie(s)
+Enter movie id: 
+Update a movie
+--------------
+Just leave it empty to keep the old value.
+Enter new title (current: [The Godfather]): Enter new description (current: [The aging patriarch of an organized crime dynasty transfers control of his clandestine
+     empire to his reluctant son.]): Enter new year (1800-2015) (current: [1972]): Enter new review score (0-100) (current: [92/100]: Select a genre (current: [Other])
+ 1. Action
+ 2. Romance
+ 3. Comeda
+ 4. Horror
+ 5. Other
+Choice: Select a film rating (current: [R]
+ 1. G
+ 2. PG
+ 3. PG-13
+ 4. R
+ 5. Unknown
+Choice: Successfully updated the movie information!
+
+1. Add movie
+2. Remove movie
+3. Update movie
+4. Quit admin mode
+
+Choice: 
+1. List movies
+2. Rent movie
+3. Return movie
+4. Admin mode
+5. Exit
+
+Choice: 
+Movies (Full)
+--------------
+[1] AAAAAAAAAAAAAAAAAAAAAAAAAAAA (1972, R) - Other [92/100]
+  => The aging patriarch of an organized crime dynasty transfers control of his clandestine
+     empire to his reluctant son.
+[2] The Dark Knight (2008, PG13) - Action [90/100]
+  => When Batman, Gordon have Harvey Dent launch an assault on the mob, they let the clown
+     out of the box, the Joker, bent on turning Gotham on itself and bringing any heroes
+     down to his level.
+[3] Inception (2010, PG13) - Action [88/100]
+  => A thief who steals corporate secrets through use of dream-sharing technology is given the
+     inverse task of planting an idea into the mind of a CEO.
+[4] The Matrix (1999, R) - Action [87/100]
+  => A computer hacker learns from mysterious rebels about the true nature of his reality and
+     his role in the war against its controllers.
+[5] Modern Times (1936, G) - Comedy [86/100]
+  => The Tramp struggles to live in modern industrial society with the help of a young
+     homeless woman.
+[6] About Time (2013, R) - Romance [78/100]
+  => At the age of 21, Tim discovers he can travel in time and change what happens and has
+     happened in his own life. His decision to make his world a better place by getting
+     a girlfriend turns out not to be as easy as you might think.
+[7] Yes Man (2008, PG13) - Comedy [69/100]
+  => A guy challenges himself to say "yes" to everything for an entire year.
+[8] The Conjuring (2013, R) - Horror [75/100]
+  => Paranormal investigators Ed and Lorraine Warren work to help a family terrorized
+     by a dark presence in their farmhouse.
+[9] The Lion King (1994, G) - Other [85/100]
+  => Lion cub and future king Simba searches for his identity. His eagerness to please others
+     and penchant for testing his boundaries sometimes gets him into trouble.
+--------------
+9 movie(s)
+
+Movies (Rented)
+--------------
