@@ -8,6 +8,10 @@ int a[LENGTH] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 int b[LENGTH];
 int dummy;
 
+int *pointer = &dummy;
+int *pointer2 = a;
+
+
 // global int variable
 int global_var = 7;
 void sum_in_global(void) {
@@ -15,6 +19,7 @@ void sum_in_global(void) {
         global_var += a[i];
     }
 }
+
 
 // extern variable (in extern_variables.c)
 extern int extern_var;
@@ -54,7 +59,7 @@ int number_nine(void) {
 }
 
 // local in if
-int magical_seven(void) {
+static int magical_seven(void) {
     if (global_var == 7) {
         int local_in_if = extern_var;
         return local_in_if;
@@ -65,7 +70,7 @@ int magical_seven(void) {
 }
 
 // variable scopes
-void variable_scopes(void) {
+int variable_scopes(void) {
     {
         char string[] = "llo ";
         if (0==0) {
@@ -81,7 +86,59 @@ void variable_scopes(void) {
     }
     char string[] = "ld!\n";
     printf("%s", string);
-}   
+    return 42;
+}
+
+struct various_types {
+    int (*struct_fun)(void);
+    int struct_int;
+    long long int struct_ll;
+    char struct_char;
+    char *struct_strref;
+    void *struct_pointer;
+    int struct_array[3];
+    float struct_float;
+    double struct_double;
+};
+
+struct various_types global_struct = {
+    variable_scopes,
+    42,
+    256,
+    'a',
+    "hello",
+    &dummy,
+    {9,8,7},
+    1.141,
+    1.141,
+};
+
+void various_types(void) {
+    int (*local_fun)(void) = variable_scopes;
+    int local_int = local_fun();
+    long long int local_ll = 256;
+    char local_char = 'a';
+    char local_string[6] = "hello";
+    char *local_strref = local_string;
+    void *local_pointer = &local_strref;
+    int local_array[3] = {9,8,7};
+    float local_float = 1.141;
+    double local_double = 1.141;
+
+    struct various_types local_struct = {
+        local_fun,
+        local_int,
+        local_ll,
+        local_char,
+        local_string,
+        local_pointer,
+        {9,8,7},
+        local_float,
+        local_double
+    };
+    local_struct.struct_fun();
+}
+
 
 void main(void) {
     sum_in_global();
@@ -91,4 +148,5 @@ void main(void) {
     number_nine();
     magical_seven();
     variable_scopes();
+    various_types();
 }
