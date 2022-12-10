@@ -89,6 +89,8 @@ int variable_scopes(void) {
     return 42;
 }
 
+typedef int my_type;
+
 struct various_types {
     int (*struct_fun)(void);
     int struct_int;
@@ -99,6 +101,7 @@ struct various_types {
     int struct_array[3];
     float struct_float;
     double struct_double;
+    my_type struct_my_type;
 };
 
 struct various_types global_struct = {
@@ -111,6 +114,7 @@ struct various_types global_struct = {
     {9,8,7},
     1.141,
     1.141,
+    16,
 };
 
 void various_types(void) {
@@ -134,7 +138,8 @@ void various_types(void) {
         local_pointer,
         {9,8,7},
         local_float,
-        local_double
+        local_double,
+        16,
     };
     local_struct.struct_fun();
 }
