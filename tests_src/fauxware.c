@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#ifdef _WIN32
+#include <io.h>
+#define open _open
+#define read _read
+#else
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #include <stdlib.h>
 
