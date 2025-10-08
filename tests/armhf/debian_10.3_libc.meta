@@ -1,0 +1,30 @@
+{
+  "unique_strings": [
+    "(old_top == initial_top (av) && old_size == 0) || ((unsigned long) (ol",
+    "status == __GCONV_OK || status == __GCONV_EMPTY_INPUT || status == __G",
+    "Using 'getprotobynumber_r' in statically linked applications requires ",
+    "lead_zero <= (base == 16 ? ((uintmax_t) exponent - (uintmax_t) INTMAX_",
+    "/usr/share/locale/%L/%N:/usr/share/locale/%L/LC_MESSAGES/%N:/usr/share",
+    "new_f.ofile.file.file._IO_write_ptr == (new_f.ofile.file.file._IO_writ",
+    "int_no <= (uintmax_t) (exponent < 0 ? (INTMAX_MAX - bits + 1) / 4 : (I",
+    "!victim || chunk_is_mmapped (mem2chunk (victim)) || &main_arena == are",
+    "pc_to_index (pc - 1, offset, scale, prof_uint) < n && pc_to_index (pc,",
+    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcde",
+    "  ##%%&&))**,,//1122447788;;==>>@@CCEEFFIIJJLLOOQQRRTTWWXX[[]]^^aabbdd",
+    "!newp || chunk_is_mmapped (mem2chunk (newp)) || ar_ptr == arena_for_ch",
+    "!p || chunk_is_mmapped (mem2chunk (p)) || &main_arena == arena_for_chu",
+    "!mem || chunk_is_mmapped (mem2chunk (mem)) || av == arena_for_chunk (m",
+    "version == NULL || (flags & ~(DL_LOOKUP_ADD_DEPENDENCY | DL_LOOKUP_GSC",
+    "size == (new_f.ofile.file.file._IO_write_end - new_f.ofile.file.file._",
+    "errnum >= 0 && errnum < _sys_nerr_internal && _sys_errlist_internal[er",
+    "info[DT_PLTREL]->d_un.d_val == DT_REL || info[DT_PLTREL]->d_un.d_val =",
+    "cannot load auxiliary `%s' because of empty dynamic string token subst",
+    "Unexpected netlink response of size %zd on descriptor %d (address fami"
+  ],
+  "arch": "armel",
+  "platform": "linux",
+  "compiler_version": "8",
+  "compiler": "gcc",
+  "os": "debian",
+  "os_version": "10.3"
+}
