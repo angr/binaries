@@ -1,4 +1,4 @@
-; nasm -felf64 -o ../../tests/x86_64/intrinsics.o intrinsics.nasm
+; nasm -felf64 -o ../../tests/x86_64/decompiler/intrinsics.o intrinsics.nasm
 
 bits 64
 section .text
@@ -45,4 +45,15 @@ test_io_inl:
     out dx, eax
     mov dx, 0xcfc
     in eax, dx
+    ret
+
+global test_in_cond
+test_in_cond:
+    in al, 0xe9
+    test al, al
+    jz .is_zero
+    mov eax, 123
+    ret
+.is_zero:
+    mov eax, 456
     ret
