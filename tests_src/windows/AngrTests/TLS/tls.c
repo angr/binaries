@@ -17,15 +17,27 @@
 
 #include <Windows.h>
 
+// Force the linker to include the TLS directory structure for x64
+#ifdef _WIN64
+#pragma comment(linker, "/INCLUDE:_tls_used")
+#pragma comment(linker, "/INCLUDE:p_thread_callback")
+#endif
+
 __declspec(thread) int tls_i = 0xaa;
 
 void NTAPI tls_callback(PVOID h, DWORD reason, PVOID reserved) {
 	tls_i++;
 }
 
+#ifdef _WIN64
+#pragma const_seg(".CRT$XLB")
+const PIMAGE_TLS_CALLBACK p_thread_callback = tls_callback;
+#pragma const_seg()
+#else
 #pragma data_seg(".CRT$XLB")
 PIMAGE_TLS_CALLBACK p_thread_callback = tls_callback;
 #pragma data_seg()
+#endif
 
 DWORD WINAPI thread_func(LPVOID lpParameter) {
 	tls_i--;
