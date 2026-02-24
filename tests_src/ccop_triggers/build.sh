@@ -1,13 +1,16 @@
 #!/bin/bash
 #
-# Build all ccop trigger binaries for amd64 and i386.
-# Usage: cd tests/analyses/decompiler/ccop_triggers && bash build.sh
+# Build all ccop trigger binaries for amd64, i386, armhf, and aarch64.
+# Usage: cd tests_src/ccop_triggers && bash build.sh
 #
 # Produces multiple variants per source file using different optimization
 # levels, tuning targets, and feature flags to maximize the variety of
 # ccop patterns the compiler emits.
 #
-# Requires: gcc, gcc-multilib (for -m32 builds)
+# Requires:
+#   gcc, gcc-multilib (for -m32 builds)
+#   arm-linux-gnueabihf-gcc (for armhf builds)
+#   aarch64-linux-gnu-gcc (for aarch64 builds)
 #
 set -e
 
@@ -18,7 +21,7 @@ cd "$SCRIPT_DIR"
 # keep debug info for decompiler friendliness
 BASE="-fno-if-conversion -fno-if-conversion2 -fno-tree-loop-if-convert -g"
 
-# ─── Standard sources: work fine with default tuning ──────────────
+# ─── x86/amd64: Standard sources ─────────────────────────────────
 STD_SRCS=(
     ccop_sub
     ccop_add
@@ -29,15 +32,22 @@ STD_SRCS=(
     ccop_rflags_c
 )
 
-# ─── INC/DEC source: needs -mtune-ctrl=use_incdec to emit inc/dec ─
+# ─── x86/amd64: INC/DEC source ───────────────────────────────────
 INCDEC_SRCS=(
     ccop_inc_dec
 )
 
-# ─── ADC/SBB source: needs wide types (__int128 on amd64, uint64_t
-#     on i386). Standard flags are fine; the code itself triggers it.
+# ─── x86/amd64: ADC/SBB source ───────────────────────────────────
 ADCSBB_SRCS=(
     ccop_adc_sbb
+)
+
+# ─── ARM: Sources that work on both armhf and aarch64 ────────────
+ARM_SRCS=(
+    ccop_arm_sub
+    ccop_arm_add
+    ccop_arm_logic
+    ccop_arm_adc_sbb
 )
 
 # Standard optimization variants
@@ -48,22 +58,20 @@ STD_VARIANTS=(
 )
 
 # INC/DEC variants: force inc/dec emission via tuning control
-# -mtune-ctrl=use_incdec: explicit GCC override (works with any -mtune)
-# -mtune=haswell: Haswell naturally enables inc/dec
 INCDEC_VARIANTS=(
     "O1_incdec::-O1 -mtune-ctrl=use_incdec"
     "O2_haswell::-O2 -mtune=haswell"
     "Os_incdec::-Os -mtune-ctrl=use_incdec"
 )
 
-mkdir -p bin/amd64 bin/i386
+mkdir -p bin/amd64 bin/i386 bin/armhf bin/aarch64
 
 FAIL=0
 COUNT=0
 
 build_one() {
-    local src="$1" name="$2" arch_flag="$3" extra_flags="$4" outdir="$5"
-    if gcc $arch_flag $BASE $extra_flags -o "${outdir}/${name}" "${src}.c" 2>&1; then
+    local compiler="$1" src="$2" name="$3" extra_flags="$4" outdir="$5"
+    if $compiler $BASE $extra_flags -o "${outdir}/${name}" "${src}.c" 2>&1; then
         COUNT=$((COUNT + 1))
     else
         echo "  FAILED: $name ($outdir)"
@@ -71,14 +79,18 @@ build_one() {
     fi
 }
 
+# ═══════════════════════════════════════════════════════════════════
+# x86 / amd64 builds
+# ═══════════════════════════════════════════════════════════════════
+
 # Build standard sources with standard variants
 for src in "${STD_SRCS[@]}"; do
     for variant in "${STD_VARIANTS[@]}"; do
         IFS=':' read -r tag _ flags <<< "$variant"
         name="${src}_${tag}"
         echo "Building $name ..."
-        build_one "$src" "$name" ""   "$flags" "bin/amd64"
-        build_one "$src" "$name" "-m32" "$flags" "bin/i386"
+        build_one "gcc"       "$src" "$name" "$flags"      "bin/amd64"
+        build_one "gcc -m32"  "$src" "$name" "$flags"      "bin/i386"
     done
 done
 
@@ -88,8 +100,8 @@ for src in "${INCDEC_SRCS[@]}"; do
         IFS=':' read -r tag _ flags <<< "$variant"
         name="${src}_${tag}"
         echo "Building $name ..."
-        build_one "$src" "$name" ""   "$flags" "bin/amd64"
-        build_one "$src" "$name" "-m32" "$flags" "bin/i386"
+        build_one "gcc"       "$src" "$name" "$flags"      "bin/amd64"
+        build_one "gcc -m32"  "$src" "$name" "$flags"      "bin/i386"
     done
 done
 
@@ -99,14 +111,28 @@ for src in "${ADCSBB_SRCS[@]}"; do
         IFS=':' read -r tag _ flags <<< "$variant"
         name="${src}_${tag}"
         echo "Building $name ..."
-        build_one "$src" "$name" ""   "$flags" "bin/amd64"
-        build_one "$src" "$name" "-m32" "$flags" "bin/i386"
+        build_one "gcc"       "$src" "$name" "$flags"      "bin/amd64"
+        build_one "gcc -m32"  "$src" "$name" "$flags"      "bin/i386"
+    done
+done
+
+# ═══════════════════════════════════════════════════════════════════
+# ARM builds (armhf + aarch64)
+# ═══════════════════════════════════════════════════════════════════
+
+for src in "${ARM_SRCS[@]}"; do
+    for variant in "${STD_VARIANTS[@]}"; do
+        IFS=':' read -r tag _ flags <<< "$variant"
+        name="${src}_${tag}"
+        echo "Building $name ..."
+        build_one "arm-linux-gnueabihf-gcc"  "$src" "$name" "$flags"  "bin/armhf"
+        build_one "aarch64-linux-gnu-gcc"    "$src" "$name" "$flags"  "bin/aarch64"
     done
 done
 
 echo ""
 if [ $FAIL -eq 0 ]; then
-    echo "Done. Built $COUNT binaries in bin/amd64/ and bin/i386/"
+    echo "Done. Built $COUNT binaries."
 else
     echo "Done with errors ($COUNT succeeded). Check output above."
     exit 1
