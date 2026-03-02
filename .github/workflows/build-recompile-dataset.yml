@@ -20,7 +20,11 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [x64, x86]
+        include:
+          - arch: x64
+            outdir: tests/x86_64/recompile_dataset_pe
+          - arch: x86
+            outdir: tests/i386/recompile_dataset_pe
     steps:
       - uses: actions/checkout@v4
 
@@ -31,35 +35,28 @@ jobs:
 
       - name: Build binaries
         shell: cmd
+        env:
+          OUTDIR: ${{ matrix.outdir }}
         run: |
           setlocal enabledelayedexpansion
-
-          if "${{ matrix.arch }}" == "x64" (
-            set "OUTDIR=tests\x86_64\recompile_dataset_pe"
-          ) else (
-            set "OUTDIR=tests\i386\recompile_dataset_pe"
-          )
-          mkdir !OUTDIR! 2>nul
+          mkdir "%OUTDIR%" 2>nul
 
           set SRCS=t1_control_flow t2_types t3_memory t4_calling t5_patterns
           set OPTS=/O1 /O2 /Os /Ox
-
           set COUNT=0
           set FAIL=0
 
-          for %%S in (%SRCS%) do (
-            for %%O in (%OPTS%) do (
-              rem Convert /O1 -> O1 for the filename tag
+          for %%S in (!SRCS!) do (
+            for %%O in (!OPTS!) do (
               set "TAG=%%O"
               set "TAG=!TAG:/=!"
-
               set "NAME=%%S_msvc_!TAG!.exe"
               echo Building !NAME! ...
 
-              cl.exe /nologo %%O /Zi /Fe:!OUTDIR!\!NAME! ^
+              cl.exe /nologo %%O /Zi /Fe:"!OUTDIR!\!NAME!" ^
                 tests_src\recompile_dataset\%%S.c ^
                 tests_src\recompile_dataset\dummy_main.c ^
-                /link /DEBUG /PDB:!OUTDIR!\%%S_msvc_!TAG!.pdb
+                /link /DEBUG /PDB:"!OUTDIR!\%%S_msvc_!TAG!.pdb"
               if !errorlevel! equ 0 (
                 set /a COUNT+=1
               ) else (
@@ -69,6 +66,10 @@ jobs:
             )
           )
 
+          rem Clean up intermediate files in working directory
+          del /q *.obj 2>nul
+          del /q "!OUTDIR!\*.ilk" 2>nul
+
           echo.
           echo Built !COUNT! binaries.
           if !FAIL! neq 0 (
@@ -76,22 +77,11 @@ jobs:
             exit /b 1
           )
 
-      - name: Clean up intermediate files
-        shell: cmd
-        run: |
-          if "${{ matrix.arch }}" == "x64" (
-            set "OUTDIR=tests\x86_64\recompile_dataset_pe"
-          ) else (
-            set "OUTDIR=tests\i386\recompile_dataset_pe"
-          )
-          del /q !OUTDIR!\*.obj 2>nul
-          del /q !OUTDIR!\*.ilk 2>nul
-
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           name: recompile-dataset-pe-${{ matrix.arch }}
-          path: tests/${{ matrix.arch == 'x64' && 'x86_64' || 'i386' }}/recompile_dataset_pe/
+          path: ${{ matrix.outdir }}/
 
   commit-binaries:
     needs: build-msvc
