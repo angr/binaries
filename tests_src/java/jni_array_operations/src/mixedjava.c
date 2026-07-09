@@ -24,23 +24,29 @@ Java_MixedJava_get_1array_1length_1native(JNIEnv *env, jclass cls, jintArray arr
 JNIEXPORT jint JNICALL 
 Java_MixedJava_return_1element(JNIEnv *env, jclass cls, jintArray arr, jint idx){
 	jboolean isCopy = 5;
+	jsize len = (*env)->GetArrayLength(env, arr);
 	jint *body = (*env)->GetIntArrayElements(env, arr, &isCopy);
 	if (isCopy == JNI_TRUE){
+		if (len < 2) return -1;
 		return body[1]; 
 	}
+	if (len < 4) return -1;
 	return body[3];
 }
 
 JNIEXPORT jboolean JNICALL 
 Java_MixedJava_boolean_1arr(JNIEnv *env, jclass cls, jbooleanArray arr, jint idx){	
 	jboolean isCopy = 5;
+	jsize len = (*env)->GetArrayLength(env, arr);
 	jboolean *body = (*env)->GetBooleanArrayElements(env, arr, &isCopy);
 	if (isCopy == JNI_TRUE){
+		if (idx < 1 || idx >= len) return JNI_FALSE;
 		jboolean elem = body[idx];
 		body[idx-1] = JNI_FALSE;
 		(*env)->ReleaseBooleanArrayElements(env, arr, body, 0);
 		return elem + 1;
 	}
+	return JNI_FALSE;
 }
 
 JNIEXPORT jbyte JNICALL
@@ -116,7 +122,7 @@ Java_MixedJava_1arr_1symbolic(JNIEnv *env, jclass cls, jintArray arr, jint idx){
 
 JNIEXPORT jint JNICALL 
 Java_MixedJava_int_1arr_1region(JNIEnv *env, jclass cls, jintArray arr, jint start_idx, jint length){
-	jint *buf = (jint*) malloc(length * sizeof(jint));
+	jint *buf = (jint*) calloc(length, sizeof(jint));
 	(*env)->GetIntArrayRegion(env, arr, start_idx, length, buf);
 	jint result = 0;
 	for (int i=0; i < length; i++)
@@ -138,7 +144,7 @@ Java_MixedJava_modify_1int_1arr(JNIEnv *env, jclass cls, jintArray arr){
 
 JNIEXPORT void JNICALL
 Java_MixedJava_modify_1int_1arr_1region(JNIEnv *env, jclass cls, jintArray arr, jint start_idx, jint length){
-	jint *buf = (jint*) malloc(3 * sizeof(jint));
+	jint *buf = (jint*) calloc(3, sizeof(jint));
 	(*env)->GetIntArrayRegion(env, arr, start_idx, length, buf);
 	
 	jint tmp = buf[0];
