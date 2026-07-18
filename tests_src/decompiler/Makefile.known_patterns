@@ -1,12 +1,15 @@
 .PHONY: all clean
 TESTDIR=../../tests
 
-all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
+all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
 
 clean:
-	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
+	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
 
 $(TESTDIR)/x86_64/decompiler/known_patterns_stl: ./known_patterns_stl.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_multiblock: ./known_patterns_multiblock.cpp
 	g++ -O2 -o $@ $<
 
 $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe: ./known_patterns_containing_record.c
