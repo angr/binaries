@@ -27,10 +27,22 @@ extern "C" __attribute__((noinline)) size_t get_size(const std::vector<int> &v)
     return v.size();
 }
 
+extern "C" __attribute__((noinline)) size_t get_size_s(const std::vector<short> &v)
+{
+    return v.size();
+}
+
+extern "C" __attribute__((noinline)) size_t get_size_ll(const std::vector<long long> &v)
+{
+    return v.size();
+}
+
 int main(int argc, char **argv)
 {
     std::string s(argv[0]);
     std::vector<int> v(argc, 7);
-    printf("%zu %zu\n", get_len(s), get_size(v));
+    std::vector<short> vs(argc, 7);
+    std::vector<long long> vll(argc, 7);
+    printf("%zu %zu %zu %zu\n", get_len(s), get_size(v), get_size_s(vs), get_size_ll(vll));
     return 0;
 }
