@@ -1,10 +1,10 @@
 .PHONY: all clean
 TESTDIR=../../tests
 
-all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
+all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
 
 clean:
-	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
+	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
 
 $(TESTDIR)/x86_64/decompiler/known_patterns_stl: ./known_patterns_stl.cpp
 	g++ -O2 -o $@ $<
@@ -14,6 +14,9 @@ $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock: ./known_patterns_multibl
 
 $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list: ./known_patterns_linux_list.c
 	gcc -O2 -fno-tree-slp-vectorize -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_protobuf: ./known_patterns_protobuf.cpp
+	g++ -O2 -o $@ $<
 
 $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe: ./known_patterns_wdk_list.c
 	x86_64-w64-mingw32-gcc -O2 -fno-tree-slp-vectorize -o $@ $<
