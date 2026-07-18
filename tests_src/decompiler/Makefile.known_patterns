@@ -1,0 +1,13 @@
+.PHONY: all clean
+TESTDIR=../../tests
+
+all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
+
+clean:
+	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_stl: ./known_patterns_stl.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe: ./known_patterns_containing_record.c
+	x86_64-w64-mingw32-gcc -O2 -o $@ $<
