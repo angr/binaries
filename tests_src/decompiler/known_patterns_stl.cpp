@@ -37,12 +37,39 @@ extern "C" __attribute__((noinline)) size_t get_size_ll(const std::vector<long l
     return v.size();
 }
 
+// container accessors (Family B): empty / capacity / operator[]
+extern "C" __attribute__((noinline)) bool vec_empty(const std::vector<int> &v)
+{
+    return v.empty();
+}
+
+extern "C" __attribute__((noinline)) size_t vec_capacity(const std::vector<int> &v)
+{
+    return v.capacity();
+}
+
+extern "C" __attribute__((noinline)) int vec_index(const std::vector<int> &v, size_t i)
+{
+    return v[i];
+}
+
+extern "C" __attribute__((noinline)) bool str_empty(const std::string &s)
+{
+    return s.empty();
+}
+
+extern "C" __attribute__((noinline)) char str_index(const std::string &s, size_t i)
+{
+    return s[i];
+}
+
 int main(int argc, char **argv)
 {
     std::string s(argv[0]);
     std::vector<int> v(argc, 7);
     std::vector<short> vs(argc, 7);
     std::vector<long long> vll(argc, 7);
-    printf("%zu %zu %zu %zu\n", get_len(s), get_size(v), get_size_s(vs), get_size_ll(vll));
+    printf("%zu %zu %zu %zu %d %zu %d %d %d\n", get_len(s), get_size(v), get_size_s(vs), get_size_ll(vll),
+           vec_empty(v), vec_capacity(v), vec_index(v, argc), str_empty(s), str_index(s, argc));
     return 0;
 }
