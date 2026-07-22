@@ -1,10 +1,10 @@
 .PHONY: all clean
 TESTDIR=../../tests
 
-all: $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/decompiler/known_patterns_vecmath $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
+all: $(TESTDIR)/x86_64/decompiler/known_patterns_ctype $(TESTDIR)/x86_64/decompiler/known_patterns_stl5 $(TESTDIR)/x86_64/decompiler/known_patterns_stl4 $(TESTDIR)/x86_64/decompiler/known_patterns_stl3 $(TESTDIR)/x86_64/decompiler/known_patterns_stl2 $(TESTDIR)/x86_64/windows/known_patterns_wdk_ksud.exe $(TESTDIR)/i386/windows/known_patterns_wdk_ksud.exe $(TESTDIR)/x86_64/decompiler/known_patterns_libm_bits $(TESTDIR)/x86_64/decompiler/known_patterns_kernel_macros $(TESTDIR)/x86_64/decompiler/known_patterns_glibc_macros $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/decompiler/known_patterns_vecmath $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
 
 clean:
-	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/decompiler/known_patterns_vecmath $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
+	rm -f $(TESTDIR)/x86_64/decompiler/known_patterns_ctype $(TESTDIR)/x86_64/decompiler/known_patterns_stl5 $(TESTDIR)/x86_64/decompiler/known_patterns_stl4 $(TESTDIR)/x86_64/decompiler/known_patterns_stl3 $(TESTDIR)/x86_64/decompiler/known_patterns_stl2 $(TESTDIR)/x86_64/windows/known_patterns_wdk_ksud.exe $(TESTDIR)/i386/windows/known_patterns_wdk_ksud.exe $(TESTDIR)/x86_64/decompiler/known_patterns_libm_bits $(TESTDIR)/x86_64/decompiler/known_patterns_kernel_macros $(TESTDIR)/x86_64/decompiler/known_patterns_glibc_macros $(TESTDIR)/x86_64/decompiler/known_patterns_stl $(TESTDIR)/x86_64/decompiler/known_patterns_multiblock $(TESTDIR)/x86_64/decompiler/known_patterns_linux_list $(TESTDIR)/x86_64/decompiler/known_patterns_protobuf $(TESTDIR)/x86_64/decompiler/known_patterns_vecmath $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe
 
 $(TESTDIR)/x86_64/decompiler/known_patterns_stl: ./known_patterns_stl.cpp
 	g++ -O2 -o $@ $<
@@ -26,3 +26,33 @@ $(TESTDIR)/x86_64/windows/known_patterns_wdk_list.exe: ./known_patterns_wdk_list
 
 $(TESTDIR)/x86_64/windows/known_patterns_containing_record.exe: ./known_patterns_containing_record.c
 	x86_64-w64-mingw32-gcc -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_glibc_macros: ./known_patterns_glibc_macros.c
+	gcc -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_kernel_macros: ./known_patterns_kernel_macros.c
+	gcc -O2 -fno-tree-slp-vectorize -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_libm_bits: ./known_patterns_libm_bits.c
+	gcc -O2 -fno-tree-vectorize -o $@ $< -lm
+
+$(TESTDIR)/x86_64/windows/known_patterns_wdk_ksud.exe: ./known_patterns_wdk_ksud.c
+	x86_64-w64-mingw32-gcc -O2 -o $@ $<
+
+$(TESTDIR)/i386/windows/known_patterns_wdk_ksud.exe: ./known_patterns_wdk_ksud.c
+	i686-w64-mingw32-gcc -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_stl2: ./known_patterns_stl2.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_stl3: ./known_patterns_stl3.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_stl4: ./known_patterns_stl4.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_stl5: ./known_patterns_stl5.cpp
+	g++ -O2 -o $@ $<
+
+$(TESTDIR)/x86_64/decompiler/known_patterns_ctype: ./known_patterns_ctype.c
+	gcc -O2 -o $@ $<
