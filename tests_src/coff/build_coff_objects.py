@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Builds the minimal i386 COFF objects in tests/x86 that cle's COFF loader tests use.
+Builds the minimal COFF objects that cle's COFF loader tests use.
 
-No object emitted by a real toolchain in this repository has a long section name or a relocation
-field that wraps, so these are assembled by hand.
+No object emitted by a real toolchain in this repository has a long section name, a relocation
+field that wraps, or an ARM64 or ARMNT machine type, so these are assembled by hand.
 """
 
 from __future__ import annotations
@@ -12,8 +12,25 @@ import os
 import struct
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
+IMAGE_FILE_MACHINE_ARMNT = 0x1C4
+IMAGE_FILE_MACHINE_R4000 = 0x166
+IMAGE_FILE_MACHINE_ARM64 = 0xAA64
+
 IMAGE_REL_I386_DIR32 = 0x0006
 IMAGE_REL_I386_REL32 = 0x0014
+
+IMAGE_REL_ARM_ADDR32 = 0x0001
+IMAGE_REL_ARM_MOV32T = 0x0011
+IMAGE_REL_ARM_BRANCH24T = 0x0014
+
+IMAGE_REL_ARM64_ADDR32NB = 0x0002
+IMAGE_REL_ARM64_BRANCH26 = 0x0003
+IMAGE_REL_ARM64_PAGEBASE_REL21 = 0x0004
+IMAGE_REL_ARM64_PAGEOFFSET_12A = 0x0006
+IMAGE_REL_ARM64_PAGEOFFSET_12L = 0x0007
+IMAGE_REL_ARM64_ADDR64 = 0x000E
+
+IMAGE_SYM_TYPE_FUNCTION = 0x20
 IMAGE_SYM_CLASS_EXTERNAL = 2
 IMAGE_SCN_TEXT = 0x60000020  # CNT_CODE | MEM_EXECUTE | MEM_READ
 
@@ -22,17 +39,18 @@ COFF_SECTION_HEADER = struct.Struct("<8sLLLLLLHHL")
 COFF_SYMBOL = struct.Struct("<8sLhHBB")
 COFF_RELOCATION = struct.Struct("<LLH")
 
-OUT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "x86")
+TESTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests")
 
 
 class CoffObjectWriter:
     """
-    Assembles a minimal i386 COFF object in memory.
+    Assembles a minimal COFF object in memory.
     """
 
-    def __init__(self):
+    def __init__(self, machine: int = IMAGE_FILE_MACHINE_I386):
+        self._machine = machine
         self._sections: list[dict] = []
-        self._symbols: list[tuple[str, int, int]] = []
+        self._symbols: list[tuple[str, int, int, int]] = []
         self._string_table = bytearray()
 
     def add_section(self, name: str, data: bytes) -> int:
@@ -42,12 +60,12 @@ class CoffObjectWriter:
         self._sections.append({"name": name, "data": data, "relocations": []})
         return len(self._sections)
 
-    def add_symbol(self, name: str, value: int, section_number: int) -> int:
+    def add_symbol(self, name: str, value: int, section_number: int, symbol_type: int = 0) -> int:
         """
         Append an external symbol defined at `value` bytes into `section_number`, and return its
-        symbol table index.
+        symbol table index. Section number 0 makes it undefined.
         """
-        self._symbols.append((name, value, section_number))
+        self._symbols.append((name, value, section_number, symbol_type))
         return len(self._symbols) - 1
 
     def add_relocation(self, section_number: int, offset: int, symbol_index: int, reloc_type: int) -> None:
@@ -78,18 +96,18 @@ class CoffObjectWriter:
                 relocation_tables += COFF_RELOCATION.pack(offset, symbol_index, reloc_type)
 
         symbol_table = bytearray()
-        for name, value, section_number in self._symbols:
+        for name, value, section_number, symbol_type in self._symbols:
             symbol_table += COFF_SYMBOL.pack(
                 self._symbol_name(name),
                 value,
                 section_number,
-                0,  # Type
+                symbol_type,
                 IMAGE_SYM_CLASS_EXTERNAL,
                 0,  # NumberOfAuxSymbols
             )
 
         header = COFF_HEADER.pack(
-            IMAGE_FILE_MACHINE_I386,
+            self._machine,
             len(self._sections),
             0,  # TimeDateStamp
             raw_data_end + len(relocation_tables),  # PointerToSymbolTable
@@ -166,16 +184,104 @@ def build_reloc_rel32() -> bytes:
     return writer.build()
 
 
+def build_reloc_arm64() -> bytes:
+    """
+    One instance of each ARM64 relocation the backend implements. `target` and `aligned` are
+    defined here, `ext_fn` is undefined so that the loader has to route the branch through an
+    extern stub. Several fields hold a non-zero addend, which the relocation has to preserve.
+    """
+    writer = CoffObjectWriter(IMAGE_FILE_MACHINE_ARM64)
+    text = writer.add_section(
+        ".text",
+        struct.pack(
+            "<11L",
+            0x94000000,  # bl ext_fn
+            0x90000000,  # adrp x0, target
+            0x91000000,  # add x0, x0, :lo12:target
+            0xB9400001,  # ldr w1, [x0, :lo12:target]
+            0x91001000,  # add x0, x0, :lo12:target, addend 4
+            0x3DC00001,  # ldr q1, [x0, :lo12:aligned]
+            0xD65F03C0,  # ret
+            0,  # padding
+            8,  # 64-bit address slot, addend 8
+            0,
+            4,  # 32-bit RVA slot, addend 4
+        ),
+    )
+    # `aligned` is 16-byte aligned, so that the vector load above can reach it.
+    target = writer.add_symbol("target", 0, text, IMAGE_SYM_TYPE_FUNCTION)
+    ext_fn = writer.add_symbol("ext_fn", 0, 0, IMAGE_SYM_TYPE_FUNCTION)
+    aligned = writer.add_symbol("aligned", 4, text)
+
+    writer.add_relocation(text, 0x00, ext_fn, IMAGE_REL_ARM64_BRANCH26)
+    writer.add_relocation(text, 0x04, target, IMAGE_REL_ARM64_PAGEBASE_REL21)
+    writer.add_relocation(text, 0x08, target, IMAGE_REL_ARM64_PAGEOFFSET_12A)
+    writer.add_relocation(text, 0x0C, target, IMAGE_REL_ARM64_PAGEOFFSET_12L)
+    writer.add_relocation(text, 0x10, target, IMAGE_REL_ARM64_PAGEOFFSET_12A)
+    writer.add_relocation(text, 0x14, aligned, IMAGE_REL_ARM64_PAGEOFFSET_12L)
+    writer.add_relocation(text, 0x20, target, IMAGE_REL_ARM64_ADDR64)
+    writer.add_relocation(text, 0x28, target, IMAGE_REL_ARM64_ADDR32NB)
+    return writer.build()
+
+
+def build_reloc_armnt() -> bytes:
+    """
+    The Thumb-2 relocations the backend implements. `ext_ptr` is named only by the pointer slot,
+    so nothing but its symbol type can decide that it is Thumb code.
+    """
+    writer = CoffObjectWriter(IMAGE_FILE_MACHINE_ARMNT)
+    text = writer.add_section(
+        ".text",
+        struct.pack(
+            "<14H",
+            0xF240,
+            0x0000,  # movw r0, #:lower16:thumbfn
+            0xF2C0,
+            0x0000,  # movt r0, #:upper16:thumbfn
+            0xF000,
+            0xF800,  # bl ext_fn
+            0xF240,
+            0x0104,  # movw r1, #:lower16:thumbfn, addend 4
+            0xF2C0,
+            0x0100,  # movt r1, #:upper16:thumbfn
+            0x4770,  # bx lr
+            0x0000,  # padding
+            0x0000,
+            0x0000,  # 32-bit pointer slot
+        ),
+    )
+    # MSVC types a referenced but undefined function this way; clang leaves it untyped.
+    thumbfn = writer.add_symbol("thumbfn", 0, text, IMAGE_SYM_TYPE_FUNCTION)
+    ext_fn = writer.add_symbol("ext_fn", 0, 0, IMAGE_SYM_TYPE_FUNCTION)
+    ext_ptr = writer.add_symbol("ext_ptr", 0, 0, IMAGE_SYM_TYPE_FUNCTION)
+
+    writer.add_relocation(text, 0x00, thumbfn, IMAGE_REL_ARM_MOV32T)
+    writer.add_relocation(text, 0x08, ext_fn, IMAGE_REL_ARM_BRANCH24T)
+    writer.add_relocation(text, 0x0C, thumbfn, IMAGE_REL_ARM_MOV32T)
+    writer.add_relocation(text, 0x18, ext_ptr, IMAGE_REL_ARM_ADDR32)
+    return writer.build()
+
+
+def build_unsupported_machine() -> bytes:
+    """
+    A header naming a machine type the COFF backend does not support, and nothing else.
+    """
+    return CoffObjectWriter(IMAGE_FILE_MACHINE_R4000).build()
+
+
 OBJECTS = {
-    "coff_long_section_names.obj": build_long_section_names,
-    "coff_reloc_dir32.obj": build_reloc_dir32,
-    "coff_reloc_rel32.obj": build_reloc_rel32,
+    "x86/coff_long_section_names.obj": build_long_section_names,
+    "x86/coff_reloc_dir32.obj": build_reloc_dir32,
+    "x86/coff_reloc_rel32.obj": build_reloc_rel32,
+    "aarch64/coff_reloc_arm64.obj": build_reloc_arm64,
+    "armel/coff_reloc_armnt.obj": build_reloc_armnt,
+    "mips/coff_r4000.obj": build_unsupported_machine,
 }
 
 
 def main() -> None:
     for name, build in OBJECTS.items():
-        path = os.path.normpath(os.path.join(OUT_DIR, name))
+        path = os.path.normpath(os.path.join(TESTS_DIR, name))
         with open(path, "wb") as f:
             f.write(build())
         print(f"wrote {path}")
