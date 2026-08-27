@@ -1,0 +1,19 @@
+[package]
+name = "rust_noreturn_trap"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "prog"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+
+[profile.minsize]
+inherits = "release"
+opt-level = "z"
+panic = "abort"
+strip = true
+lto = true
+codegen-units = 1
