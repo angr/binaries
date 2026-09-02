@@ -3,7 +3,8 @@
  * A section with no bytes in the file states PointerToRawData 0, so a loader that places
  * sections at their file offsets puts this one on top of the file header and the code.
  *
- * i686-w64-mingw32-gcc -c -O2 -fno-asynchronous-unwind-tables coff_bss.c -o ../../tests/x86/coff_bss.obj
+ * i686-w64-mingw32-gcc -c -O2 -fno-asynchronous-unwind-tables -fzero-call-used-regs=used-gpr \
+ *     coff_bss.c -o ../../tests/x86/coff_bss.obj
  */
 
 static unsigned char buffer[4096];
