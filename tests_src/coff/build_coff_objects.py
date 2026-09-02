@@ -3,7 +3,8 @@
 Builds the minimal COFF objects that cle's COFF loader tests use.
 
 No object emitted by a real toolchain in this repository has a long section name, a relocation
-field that wraps, or an ARM64 or ARMNT machine type, so these are assembled by hand.
+field that wraps, a relocation field positioned outside the section that owns it or outside the
+file, or an ARM64 or ARMNT machine type, so these are assembled by hand.
 """
 
 from __future__ import annotations
@@ -184,6 +185,35 @@ def build_reloc_rel32() -> bytes:
     return writer.build()
 
 
+def build_reloc_outside_section() -> bytes:
+    """
+    A relocation whose field lies past the end of the section that owns it, and so inside the
+    next section's raw data. The two sections hold different fill bytes, so a loader that
+    resolves the relocation against the whole file rewrites bytes of `.data` that no relocation
+    names.
+    """
+    writer = CoffObjectWriter()
+    text = writer.add_section(".text", b"\x90" * 16)
+    writer.add_section(".data", b"\xaa" * 16)
+    target = writer.add_symbol("_target", 8, text)
+    # .text holds 16 bytes, so offset 0x10 is the first byte of .data.
+    writer.add_relocation(text, 0x10, target, IMAGE_REL_I386_DIR32)
+    return writer.build()
+
+
+def build_reloc_outside_file() -> bytes:
+    """
+    A relocation whose field lies past the end of the whole object, not merely past its section.
+    A loader that adds the offset to the section's PointerToRawData without checking it reads and
+    writes an address that nothing maps.
+    """
+    writer = CoffObjectWriter()
+    text = writer.add_section(".text", b"\x90" * 16)
+    target = writer.add_symbol("_target", 8, text)
+    writer.add_relocation(text, 0x4000000, target, IMAGE_REL_I386_DIR32)
+    return writer.build()
+
+
 def build_reloc_arm64() -> bytes:
     """
     One instance of each ARM64 relocation the backend implements. `target` and `aligned` are
@@ -273,6 +303,8 @@ OBJECTS = {
     "x86/coff_long_section_names.obj": build_long_section_names,
     "x86/coff_reloc_dir32.obj": build_reloc_dir32,
     "x86/coff_reloc_rel32.obj": build_reloc_rel32,
+    "x86/coff_reloc_outside_section.obj": build_reloc_outside_section,
+    "x86/coff_reloc_outside_file.obj": build_reloc_outside_file,
     "aarch64/coff_reloc_arm64.obj": build_reloc_arm64,
     "armel/coff_reloc_armnt.obj": build_reloc_armnt,
     "mips/coff_r4000.obj": build_unsupported_machine,
