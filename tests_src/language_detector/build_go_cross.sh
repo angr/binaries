@@ -15,6 +15,7 @@
 #   tests/aarch64/langdetect_go[_<goversion>]             linux/arm64
 #   tests/aarch64/windows/langdetect_go[_<goversion>].exe windows/arm64
 #   tests/x86_64/windows/langdetect_go.exe                windows/amd64
+#   tests/aarch64/langdetect_go.macho                     darwin/arm64
 #
 # The unsuffixed name is the current toolchain (GO_CURRENT); older ones carry the version suffix.
 # The linux/amd64 build lives in build.sh (tests/x86_64/langdetect_go).
@@ -63,3 +64,10 @@ done
 
 # windows/amd64 is cross-checked against Go binaries from elsewhere, so only the current build
 build "$GO_SDK_DIR/$GO_CURRENT/bin/go" windows amd64 tests/x86_64/windows/langdetect_go.exe
+
+# darwin/amd64 is left out: the Go linker emits LC_UNIXTHREAD there and cle cannot load it yet.
+# -trimpath because this one was not built at /workspace like its siblings, and without it the
+# binary would carry the builder's home directory.
+GOOS=darwin GOARCH=arm64 "$GO_SDK_DIR/$GO_CURRENT/bin/go" build -trimpath \
+    -o "$ROOT/tests/aarch64/langdetect_go.macho" "$SRC" \
+    && echo "  OK: tests/aarch64/langdetect_go.macho" || echo "  FAIL: tests/aarch64/langdetect_go.macho"
