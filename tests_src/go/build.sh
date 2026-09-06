@@ -22,7 +22,7 @@ cd "$(dirname "$0")"
 ROOT=$(git rev-parse --show-toplevel)
 GO_SDK_DIR=${GO_SDK_DIR:-/workspace/tools}
 GO_VERSIONS=${GO_VERSIONS:-"go1.22.5 go1.27.1"}
-PROGS=${PROGS:-"basics builtins conc iface maps"}
+PROGS=${PROGS:-"basics builtins conc iface maps swap"}
 
 # arm64 builds (optimized + stripped only) of the programs in ARM64_PROGS land under tests/aarch64/go/<goversion>/
 ARM64_PROGS=${ARM64_PROGS:-"basics"}
