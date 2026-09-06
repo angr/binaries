@@ -86,4 +86,17 @@ extern "C" __attribute__((noinline)) void str_clear(std::string *s) { s->clear()
 // a vector of strings: the element destructor runs in a loop
 extern "C" __attribute__((noinline)) void vec_free(std::vector<std::string> *v) { v->clear(); }
 
+// Not strings at all. std::vector keeps _M_finish at +8, exactly where a
+// string keeps _M_string_length, and a bare Load(v + 8) is how both read. The
+// vector's other fields are what tells them apart:
+//
+//   * push_back opens with `_M_finish == _M_end_of_storage` (+8 against +16);
+//   * size() of a byte-element vector is `_M_finish - _M_start` with no shift,
+//     so no size() template keys on it.
+//
+// Both are claims-only fingerprints in vector_claims.py: they never name a
+// call, they only stop std::string::length from claiming the base.
+extern "C" __attribute__((noinline)) void vec_push(std::vector<int> *v, int x) { v->push_back(x); }
+extern "C" __attribute__((noinline)) unsigned long vec_bytes(std::vector<char> *v) { return v->size(); }
+
 int main() { return 0; }
