@@ -3,7 +3,8 @@
 Builds the minimal COFF objects that cle's COFF loader tests use.
 
 No object emitted by a real toolchain in this repository has a long section name, a relocation
-field that wraps, or an ARM64 or ARMNT machine type, so these are assembled by hand.
+field that wraps, an ARM64 or ARMNT machine type, or a section with no bytes in the file whose
+characteristics do not claim uninitialized data, so these are assembled by hand.
 """
 
 from __future__ import annotations
@@ -53,11 +54,27 @@ class CoffObjectWriter:
         self._symbols: list[tuple[str, int, int, int]] = []
         self._string_table = bytearray()
 
-    def add_section(self, name: str, data: bytes) -> int:
+    def add_section(
+        self,
+        name: str,
+        data: bytes,
+        size_of_raw_data: int | None = None,
+    ) -> int:
         """
         Append a section and return its one-based section number.
+
+        `size_of_raw_data` overrides the length the header states, which is otherwise the
+        length of `data`. A section carrying no bytes states PointerToRawData 0, as a
+        toolchain does for uninitialized data.
         """
-        self._sections.append({"name": name, "data": data, "relocations": []})
+        self._sections.append(
+            {
+                "name": name,
+                "data": data,
+                "size_of_raw_data": len(data) if size_of_raw_data is None else size_of_raw_data,
+                "relocations": [],
+            }
+        )
         return len(self._sections)
 
     def add_symbol(self, name: str, value: int, section_number: int, symbol_type: int = 0) -> int:
@@ -83,8 +100,8 @@ class CoffObjectWriter:
                 self._section_name(section["name"]),
                 0,  # VirtualSize
                 0,  # VirtualAddress
-                len(section["data"]),  # SizeOfRawData
-                self._section_offset(section_number),  # PointerToRawData
+                section["size_of_raw_data"],  # SizeOfRawData
+                self._section_offset(section_number) if section["data"] else 0,  # PointerToRawData
                 raw_data_end + len(relocation_tables) if relocations else 0,  # PointerToRelocations
                 0,  # PointerToLinenumbers
                 len(relocations),  # NumberOfRelocations
@@ -157,6 +174,19 @@ def build_long_section_names() -> bytes:
     writer.add_section(".gcc_except_table", b"\0" * 4)
     for i in range(16):
         writer.add_symbol(f"_sym{i}", 0, 1)
+    return writer.build()
+
+
+def build_bss_without_the_uninitialized_flag() -> bytes:
+    """
+    A section with no bytes in the file whose characteristics do not claim uninitialized
+    data. Every .bss a toolchain emits sets IMAGE_SCN_CNT_UNINITIALIZED_DATA, so a loader
+    that gives such a section zero-filled space of its own keys on that flag; this states
+    PointerToRawData 0 with a 64 MiB SizeOfRawData and marks itself code instead.
+    """
+    writer = CoffObjectWriter()
+    writer.add_section(".text", b"\x90" * 16)
+    writer.add_section(".bss", b"", size_of_raw_data=0x4000000)
     return writer.build()
 
 
@@ -276,6 +306,7 @@ OBJECTS = {
     "aarch64/coff_reloc_arm64.obj": build_reloc_arm64,
     "armel/coff_reloc_armnt.obj": build_reloc_armnt,
     "mips/coff_r4000.obj": build_unsupported_machine,
+    "x86/coff_bss_no_flag.obj": build_bss_without_the_uninitialized_flag,
 }
 
 
