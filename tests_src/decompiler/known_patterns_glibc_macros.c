@@ -109,6 +109,14 @@ __attribute__((noinline)) dev_t dev_makedev(unsigned int maj, unsigned int min)
     return makedev(maj, min);
 }
 
+/* S_IS* as a *value*, not a condition. The matcher replaces a 1-bit comparison
+ * with a call, and a call one bit wide is a thing the C emitter must not try
+ * to type: it cast one to `uint0_t` and died in address arithmetic. */
+__attribute__((noinline)) int kind_count(unsigned m, unsigned n) { return S_ISREG(m) + S_ISDIR(n); }
+__attribute__((noinline)) int kind_tab(const int *tab, unsigned m) { return tab[S_ISREG(m)]; }
+__attribute__((noinline)) const int *kind_ptr(const int *tab, unsigned m) { return tab + S_ISREG(m); }
+__attribute__((noinline)) int kind_mix(const int *tab, unsigned m, unsigned n) { return tab[S_ISREG(m) + S_ISDIR(n)]; }
+
 int main(void)
 {
     int acc = 0;

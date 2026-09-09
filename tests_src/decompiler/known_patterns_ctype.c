@@ -85,4 +85,9 @@ __attribute__((noinline)) int errno_rw(int fd)
     return errno;
 }
 
+/* tolower() result used twice: the table load gets its own definition
+ * `v = table[c]`, and the matcher used to match *v itself* -- resolving it to the
+ * load it defines -- and rewrite the definition's destination into a call. */
+__attribute__((noinline)) void lower_twice(int c, int *out) { int t = tolower(c); out[0] = t; out[1] = t; }
+
 int main(void) { int n = 0; classify("a1 b2", &n); return n + errno_rw(1); }
