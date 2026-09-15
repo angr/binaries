@@ -1,9 +1,9 @@
 # ChibiOS `_crt0_entry` fixtures
 
-These files are the 134-byte `_crt0_entry` function bodies from the public
+These files contain the first 134 bytes of `_crt0_entry` from the public
 DecBench ChibiOS Cortex-M binaries at dataset revision
 [`e5eb576d66ee36793b800a4dd45e291e0add4472`](https://huggingface.co/datasets/noelo-lab/decbench-dataset/tree/e5eb576d66ee36793b800a4dd45e291e0add4472).
-Each body starts at file offset `0x11e0` in its source ELF and is loaded at
+Each slice starts at file offset `0x11e0` in its source ELF and is loaded at
 address `0x080001e0`.
 
 | Fixture | Source ELF | Source ELF SHA-256 |
