@@ -6,7 +6,7 @@
 #   tests/x86_64/go/<goversion>/<prog>_N          -gcflags='all=-N -l'       (no inlining, no optimization)
 #   tests/x86_64/go/<goversion>/<prog>_stripped   -gcflags=all=-l -ldflags='-s -w' (symbols only via pclntab)
 #   tests/aarch64/go/<goversion>/<prog>[_stripped] arm64 builds of ARM64_PROGS (default: basics)
-#   tests/aarch64/go/go1.27.1/<prog>[_stripped]    arm64 builds of ARM64_127_PROGS (need go1.23+ APIs)
+#   tests/<arch>/go/go1.27.1/<prog>...               GO127_PROGS (need go1.23+ APIs): amd64 (three builds), arm64, 386
 #   tests/x86_64/go/go1.27.1/<prog>_inlined        default inlining (INLINED_PROGS; shapes that need it)
 #   tests/i386/go/go1.27.1/<prog>                  386 builds of I386_PROGS, -gcflags=all=-l
 #
@@ -27,8 +27,8 @@ PROGS=${PROGS:-"basics builtins conc iface maps swap"}
 
 # arm64 builds (optimized + stripped only) of the programs in ARM64_PROGS land under tests/aarch64/go/<goversion>/
 ARM64_PROGS=${ARM64_PROGS:-"basics"}
-# arm64 programs that need go1.23+ APIs (sync/atomic And/Or), built with go1.27.1 only
-ARM64_127_PROGS=${ARM64_127_PROGS:-"atomics"}
+# programs that need go1.23+ APIs (sync/atomic And/Or), built with go1.27.1 only
+GO127_PROGS=${GO127_PROGS:-"atomics"}
 # programs whose shape only appears with the inliner on (one optimized amd64 build, go1.27.1 only)
 INLINED_PROGS=${INLINED_PROGS:-"uninit"}
 # 386 builds (one optimized build, go1.27.1 only)
@@ -61,11 +61,18 @@ for prog in $INLINED_PROGS; do
     GOARCH=amd64 "$GO" build -o "$out/${prog}_inlined" "$prog.go"
     echo "built $prog (inlined) with go1.27.1"
 done
-out="$ROOT/tests/aarch64/go/go1.27.1"
-for prog in $ARM64_127_PROGS; do
+for prog in $GO127_PROGS; do
+    out="$ROOT/tests/x86_64/go/go1.27.1"
+    GOARCH=amd64 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
+    GOARCH=amd64 "$GO" build -gcflags='all=-N -l' -o "$out/${prog}_N" "$prog.go"
+    GOARCH=amd64 "$GO" build -gcflags=all=-l -ldflags='-s -w' -o "$out/${prog}_stripped" "$prog.go"
+    out="$ROOT/tests/aarch64/go/go1.27.1"
     GOARCH=arm64 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
     GOARCH=arm64 "$GO" build -gcflags=all=-l -ldflags='-s -w' -o "$out/${prog}_stripped" "$prog.go"
-    echo "built $prog (arm64) with go1.27.1"
+    out="$ROOT/tests/i386/go/go1.27.1"
+    mkdir -p "$out"
+    GOARCH=386 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
+    echo "built $prog (amd64, arm64, 386) with go1.27.1"
 done
 out="$ROOT/tests/i386/go/go1.27.1"
 mkdir -p "$out"
