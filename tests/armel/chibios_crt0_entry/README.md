@@ -18,6 +18,8 @@ upstream release is ChibiOS 21.11.5 at commit
 The function source is
 [`os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S`](https://github.com/ChibiOS/ChibiOS/blob/f4bbadf964fc746aef8bbcf34135c7d8fabb8eae/os/common/startup/ARMCMx/compilers/GCC/crt0_v7m.S).
 
-ChibiOS is licensed under the GNU General Public License version 3. The
-adjacent `LICENSE` is the verbatim license file from that pinned upstream
-revision.
+The pinned `crt0_v7m.S` source carries an Apache-2.0 header and the notice
+"ChibiOS - Copyright (C) 2006-2026 Giovanni Di Sirio."
+`LICENSE.Apache-2.0` contains the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
+The adjacent `LICENSE` retains the GPLv3 text from the pinned ChibiOS release's
+[`license.txt`](https://github.com/ChibiOS/ChibiOS/blob/f4bbadf964fc746aef8bbcf34135c7d8fabb8eae/license.txt).
