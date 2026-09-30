@@ -38,3 +38,20 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
+
+The file `decompiler/libbsd.so.0.11.7` is copied unchanged from the DecBench
+Decompiler Benchmark Dataset at revision
+[`4b42a0dc6158913db0648a9123e76d6ddd9ab9cf`](https://huggingface.co/datasets/noelo-lab/decbench-dataset/tree/4b42a0dc6158913db0648a9123e76d6ddd9ab9cf).
+Its source path is `binaries/O2/libbsd/libbsd.so.0.11.7`; the pinned Git LFS
+object is 342,640 bytes with SHA-256
+`50c8329c57981e6553cfa906a8d5ee7cd6d676bc849d23d6b4ea30234b93bb61`.
+The dataset is distributed under the BSD-2-Clause license, as recorded in its
+[dataset card](https://huggingface.co/datasets/noelo-lab/decbench-dataset/blob/4b42a0dc6158913db0648a9123e76d6ddd9ab9cf/README.md).
+
+The binary is an optimized build of libbsd 0.11.7. The release's complete
+copyright and license record is reproduced verbatim in the adjacent
+[`decompiler/libbsd.so.0.11.7.COPYING`](decompiler/libbsd.so.0.11.7.COPYING),
+from the pinned upstream
+[`0.11.7` source](https://gitlab.freedesktop.org/libbsd/libbsd/-/raw/0.11.7/COPYING),
+with SHA-256
+`7aab3a07716d31ca72e66c1073ef8a0fa0be0daa5df7c3b2cc0c668589142336`.
