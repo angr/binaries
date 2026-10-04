@@ -28,7 +28,7 @@ PROGS=${PROGS:-"basics builtins conc iface maps swap"}
 # arm64 builds (optimized + stripped only) of the programs in ARM64_PROGS land under tests/aarch64/go/<goversion>/
 ARM64_PROGS=${ARM64_PROGS:-"basics"}
 # programs that need go1.23+ APIs (sync/atomic And/Or), built with go1.27.1 only
-GO127_PROGS=${GO127_PROGS:-"atomics"}
+GO127_PROGS=${GO127_PROGS:-"atomics typeswitch"}
 # programs whose shape only appears with the inliner on (one optimized amd64 build, go1.27.1 only)
 INLINED_PROGS=${INLINED_PROGS:-"uninit"}
 # 386 builds (one optimized build, go1.27.1 only)
