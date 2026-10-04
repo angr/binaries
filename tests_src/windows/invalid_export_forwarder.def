@@ -1,0 +1,4 @@
+LIBRARY invalid_export_forwarder.dll
+EXPORTS
+    local_export
+    forwarded_export = user32.MessageBoxA
