@@ -8,17 +8,26 @@
 # compare through x17 in go1.18, and compares sp directly from go1.19). go1.17 is the oldest release
 # that supports windows/arm64.
 #
+# The pre-1.17 releases are there for the pclntab layouts cle parses: go1.10.8 (0xfffffffb table,
+# int32 nfuncdata tail, funcID in the old frame slot), go1.15.15 (0xfffffffb, funcID/nfuncdata byte
+# tail, deferreturn) and go1.16.15 (0xfffffffa without the 1.17 flag byte). They get extra amd64
+# builds (ELF, PE, and a darwin/amd64 Mach-O for go1.15) because those formats are otherwise only
+# covered by the current toolchain, and skip the targets they do not support (windows/arm64 needs
+# go1.17, darwin/arm64 go1.16).
+#
 # Output (relative to the binaries repo root), <goversion> being one of GO_VERSIONS below:
 #   tests/i386/langdetect_go[_<goversion>]                linux/386
 #   tests/i386/windows/langdetect_go[_<goversion>].exe    windows/386
 #   tests/armel/langdetect_go[_<goversion>]               linux/arm
 #   tests/aarch64/langdetect_go[_<goversion>]             linux/arm64
-#   tests/aarch64/windows/langdetect_go[_<goversion>].exe windows/arm64
-#   tests/x86_64/windows/langdetect_go.exe                windows/amd64
+#   tests/aarch64/windows/langdetect_go[_<goversion>].exe windows/arm64        (go1.17+)
+#   tests/x86_64/langdetect_go_<goversion>                linux/amd64          (pre-1.17 only)
+#   tests/x86_64/windows/langdetect_go[_<goversion>].exe  windows/amd64        (current and pre-1.17)
+#   tests/x86_64/langdetect_go_<goversion>.macho          darwin/amd64         (go1.15 only)
 #   tests/aarch64/langdetect_go.macho                     darwin/arm64
 #
 # The unsuffixed name is the current toolchain (GO_CURRENT); older ones carry the version suffix.
-# The linux/amd64 build lives in build.sh (tests/x86_64/langdetect_go).
+# The current linux/amd64 build lives in build.sh (tests/x86_64/langdetect_go).
 #
 # Requirements:
 #   - one Go toolchain per version in GO_VERSIONS, in $GO_SDK_DIR/<goversion>/bin/go
@@ -30,6 +39,7 @@
 # Usage:
 #   cd <binaries-repo-root>/tests_src/language_detector
 #   GO_SDK_DIR=/opt/go-sdk ./build_go_cross.sh
+#   GO_SDK_DIR=/opt/go-sdk GO_VERSIONS="go1.10.8 go1.15.15" ./build_go_cross.sh   # a subset
 
 set -euo pipefail
 
@@ -37,7 +47,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SRC="$SCRIPT_DIR/langdetect_go.go"
 
-GO_VERSIONS=(go1.17.13 go1.18.10 go1.20.14 go1.22.5 go1.27.1)
+ALL_GO_VERSIONS="go1.10.8 go1.15.15 go1.16.15 go1.17.13 go1.18.10 go1.20.14 go1.22.5 go1.27.1"
+GO_VERSIONS=${GO_VERSIONS:-$ALL_GO_VERSIONS}
 GO_CURRENT=go1.27.1
 GO_SDK_DIR="${GO_SDK_DIR:-$HOME/sdk}"
 export CGO_ENABLED=0 GOTOOLCHAIN=local
@@ -49,7 +60,12 @@ build() { # <go> <goos> <goarch> <output>
         && echo "  OK: $4" || echo "  FAIL: $4"
 }
 
-for version in "${GO_VERSIONS[@]}"; do
+minor() { # go1.N.M -> N
+    local v=${1#go1.}
+    echo "${v%%.*}"
+}
+
+for version in $GO_VERSIONS; do
     go_bin="$GO_SDK_DIR/$version/bin/go"
     echo "Go version : $("$go_bin" version)"
     # the current toolchain owns the unsuffixed names
@@ -59,7 +75,15 @@ for version in "${GO_VERSIONS[@]}"; do
     build "$go_bin" windows 386   "tests/i386/windows/langdetect_go$suffix.exe"
     build "$go_bin" linux   arm   "tests/armel/langdetect_go$suffix"
     build "$go_bin" linux   arm64 "tests/aarch64/langdetect_go$suffix"
-    build "$go_bin" windows arm64 "tests/aarch64/windows/langdetect_go$suffix.exe"
+    if [ "$(minor "$version")" -ge 17 ]; then
+        build "$go_bin" windows arm64 "tests/aarch64/windows/langdetect_go$suffix.exe"
+    else
+        build "$go_bin" linux   amd64 "tests/x86_64/langdetect_go$suffix"
+        build "$go_bin" windows amd64 "tests/x86_64/windows/langdetect_go$suffix.exe"
+    fi
+    if [ "$version" = go1.15.15 ]; then
+        build "$go_bin" darwin  amd64 "tests/x86_64/langdetect_go$suffix.macho"
+    fi
 done
 
 # windows/amd64 is cross-checked against Go binaries from elsewhere, so only the current build
