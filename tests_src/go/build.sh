@@ -9,6 +9,7 @@
 #   tests/<arch>/go/go1.27.1/<prog>...               GO127_PROGS (need go1.23+ APIs): amd64 (three builds), arm64, 386
 #   tests/x86_64/go/go1.27.1/<prog>_inlined        default inlining (INLINED_PROGS; shapes that need it)
 #   tests/i386/go/go1.27.1/<prog>                  386 builds of I386_PROGS, -gcflags=all=-l
+#   tests/x86_64/go/go1.22.5/<prog>                GO122_PROGS (shapes go1.23+ no longer emits), -gcflags=all=-l
 #   tests/x86_64/go/<goversion>/basics[_stripped]  LEGACY_VERSIONS (pre-1.17 pclntab layouts: go1.4.3,
 #                                                  go1.9.7, go1.10.8, go1.15.15, go1.16.15), amd64 only
 #
@@ -35,6 +36,8 @@ GO127_PROGS=${GO127_PROGS:-"atomics typeswitch"}
 INLINED_PROGS=${INLINED_PROGS:-"uninit strvals"}
 # 386 builds (one optimized build, go1.27.1 only)
 I386_PROGS=${I386_PROGS:-"recv"}
+# programs whose shape needs go1.22 or older (one optimized amd64 build, go1.22.5 only)
+GO122_PROGS=${GO122_PROGS:-"defers"}
 # toolchains with older pclntab layouts: basics only, optimized and stripped; the empty default keeps
 # a plain ./build.sh from needing them
 LEGACY_VERSIONS=${LEGACY_VERSIONS:-""}
@@ -84,6 +87,14 @@ mkdir -p "$out"
 for prog in $I386_PROGS; do
     GOARCH=386 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
     echo "built $prog (386) with go1.27.1"
+done
+
+GO="$GO_SDK_DIR/go1.22.5/bin/go"
+out="$ROOT/tests/x86_64/go/go1.22.5"
+mkdir -p "$out"
+for prog in $GO122_PROGS; do
+    GOARCH=amd64 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
+    echo "built $prog with go1.22.5"
 done
 
 # -trimpath only exists from go1.13, so the older builds carry the build directory in their file
