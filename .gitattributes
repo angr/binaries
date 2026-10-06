@@ -1,4 +1,5 @@
 tests/* -text
+tests/stm32/* -text
 tests_data/* -text
 tests_src/* text
 .gitignore text
