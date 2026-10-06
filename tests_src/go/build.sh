@@ -12,6 +12,10 @@
 #   tests/x86_64/go/go1.22.5/<prog>                GO122_PROGS (shapes go1.23+ no longer emits), -gcflags=all=-l
 #   tests/x86_64/go/<goversion>/basics[_stripped]  LEGACY_VERSIONS (pre-1.17 pclntab layouts: go1.4.3,
 #                                                  go1.9.7, go1.10.8, go1.15.15, go1.16.15), amd64 only
+#   tests/x86_64/go/go1.16.15/basics_pie[_extld]_stripped  PIE_VERSION -buildmode=pie, stripped; the pre-1.18
+#                                                  table lives in relro: .data.rel.ro.gopclntab with the
+#                                                  internal linker, merged into .data.rel.ro by an
+#                                                  external one (_extld, needs cgo and a C toolchain)
 #
 # Requirements: one Go toolchain per version in $GO_SDK_DIR/<goversion>/bin/go
 # (https://go.dev/dl/<goversion>.linux-amd64.tar.gz).
@@ -41,6 +45,8 @@ GO122_PROGS=${GO122_PROGS:-"defers"}
 # toolchains with older pclntab layouts: basics only, optimized and stripped; the empty default keeps
 # a plain ./build.sh from needing them
 LEGACY_VERSIONS=${LEGACY_VERSIONS:-""}
+# toolchain for the PIE builds; empty by default like LEGACY_VERSIONS
+PIE_VERSION=${PIE_VERSION:-""}
 
 export CGO_ENABLED=0 GOOS=linux GOFLAGS=-trimpath
 
@@ -109,3 +115,14 @@ for ver in $LEGACY_VERSIONS; do
     GOROOT="$GO_SDK_DIR/$ver" GOARCH=amd64 GOFLAGS= "$GO" build -gcflags=$gcflags -ldflags='-s -w' -o "$out/basics_stripped" basics.go
     echo "built basics (legacy) with $ver"
 done
+
+if [ -n "$PIE_VERSION" ]; then
+    GO="$GO_SDK_DIR/$PIE_VERSION/bin/go"
+    out="$ROOT/tests/x86_64/go/$PIE_VERSION"
+    mkdir -p "$out"
+    GOROOT="$GO_SDK_DIR/$PIE_VERSION" GOARCH=amd64 "$GO" build -buildmode=pie -gcflags=all=-l -ldflags='-s -w' \
+        -o "$out/basics_pie_stripped" basics.go
+    CGO_ENABLED=1 GOROOT="$GO_SDK_DIR/$PIE_VERSION" GOARCH=amd64 "$GO" build -buildmode=pie -gcflags=all=-l \
+        -ldflags='-linkmode=external -s -w' -o "$out/basics_pie_extld_stripped" basics.go
+    echo "built basics (pie) with $PIE_VERSION"
+fi
