@@ -38,7 +38,7 @@ ARM64_PROGS=${ARM64_PROGS:-"basics"}
 # programs that need go1.23+ APIs (sync/atomic And/Or), built with go1.27.1 only
 GO127_PROGS=${GO127_PROGS:-"atomics typeswitch mapmake"}
 # programs whose shape only appears with the inliner on (one optimized amd64 build, go1.27.1 only)
-INLINED_PROGS=${INLINED_PROGS:-"uninit strvals lists"}
+INLINED_PROGS=${INLINED_PROGS:-"uninit strvals lists mapkeys"}
 # 386 builds (one optimized build, go1.27.1 only)
 I386_PROGS=${I386_PROGS:-"recv strcat"}
 # 32-bit arm builds (one optimized build, go1.27.1 only)
