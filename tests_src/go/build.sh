@@ -41,7 +41,7 @@ GO127_PROGS=${GO127_PROGS:-"atomics typeswitch mapmake"}
 # programs whose shape only appears with the inliner on (one optimized amd64 build, go1.27.1 only)
 INLINED_PROGS=${INLINED_PROGS:-"uninit strvals lists"}
 # programs whose shape needs guessed callee results (one stripped amd64 build, go1.27.1 only)
-STRIPPED_PROGS=${STRIPPED_PROGS:-"floatcmp"}
+STRIPPED_PROGS=${STRIPPED_PROGS:-"floatcmp floatnan"}
 # 386 builds (one optimized build, go1.27.1 only)
 I386_PROGS=${I386_PROGS:-"recv strcat"}
 # 32-bit arm builds (one optimized build, go1.27.1 only)
