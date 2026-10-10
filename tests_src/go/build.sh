@@ -8,6 +8,7 @@
 #   tests/aarch64/go/<goversion>/<prog>[_stripped] arm64 builds of ARM64_PROGS (default: basics)
 #   tests/<arch>/go/go1.27.1/<prog>...               GO127_PROGS (need go1.23+ APIs): amd64 (three builds), arm64, 386
 #   tests/x86_64/go/go1.27.1/<prog>_inlined        default inlining (INLINED_PROGS; shapes that need it)
+#   tests/x86_64/go/go1.27.1/<prog>_stripped       STRIPPED_PROGS only, -gcflags=all=-l -ldflags='-s -w'
 #   tests/i386/go/go1.27.1/<prog>                  386 builds of I386_PROGS, -gcflags=all=-l
 #   tests/armel/go/go1.27.1/<prog>                 32-bit arm builds of ARM_PROGS, -gcflags=all=-l
 #   tests/x86_64/go/go1.22.5/<prog>                GO122_PROGS (shapes go1.23+ no longer emits), -gcflags=all=-l
@@ -39,6 +40,8 @@ ARM64_PROGS=${ARM64_PROGS:-"basics"}
 GO127_PROGS=${GO127_PROGS:-"atomics typeswitch mapmake"}
 # programs whose shape only appears with the inliner on (one optimized amd64 build, go1.27.1 only)
 INLINED_PROGS=${INLINED_PROGS:-"uninit strvals lists"}
+# programs whose shape needs guessed callee results (one stripped amd64 build, go1.27.1 only)
+STRIPPED_PROGS=${STRIPPED_PROGS:-"floatcmp"}
 # 386 builds (one optimized build, go1.27.1 only)
 I386_PROGS=${I386_PROGS:-"recv strcat"}
 # 32-bit arm builds (one optimized build, go1.27.1 only)
@@ -90,6 +93,11 @@ for prog in $GO127_PROGS; do
     mkdir -p "$out"
     GOARCH=386 "$GO" build -gcflags=all=-l -o "$out/$prog" "$prog.go"
     echo "built $prog (amd64, arm64, 386) with go1.27.1"
+done
+out="$ROOT/tests/x86_64/go/go1.27.1"
+for prog in $STRIPPED_PROGS; do
+    GOARCH=amd64 "$GO" build -gcflags=all=-l -ldflags='-s -w' -o "$out/${prog}_stripped" "$prog.go"
+    echo "built $prog (stripped) with go1.27.1"
 done
 out="$ROOT/tests/i386/go/go1.27.1"
 mkdir -p "$out"
