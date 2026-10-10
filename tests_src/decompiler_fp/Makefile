@@ -238,3 +238,12 @@ all: sret_ptr_amd64.o
 
 sret_ptr_amd64.o: sret_ptr_amd64.s
 	nasm -f elf64 -o $@ $<
+
+# a double above FLT_MAX narrowed to float, linked at address 0 as a raw AArch64 image (load it as a blob)
+OBJ_BINS += fp_narrow_overflow_aarch64.bin
+all: fp_narrow_overflow_aarch64.bin
+
+fp_narrow_overflow_aarch64.bin: fp_narrow_overflow.c
+	clang --target=aarch64-none-elf -O1 -ffreestanding -fno-pic -c -o fp_narrow_overflow_aarch64.o $<
+	ld.lld --image-base=0 -Ttext=0 --oformat=binary -e narrow_big -o $@ fp_narrow_overflow_aarch64.o
+	rm -f fp_narrow_overflow_aarch64.o
