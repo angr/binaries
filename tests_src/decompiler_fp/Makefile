@@ -46,7 +46,7 @@ ASM_BINS := \
 	x87_narrow_store_i386.o \
 	x87_sibling_store_i386.o
 
-all: $(BINS) $(ASM_BINS) $(OBJ_BINS) x87_math_amd64 x87_ld_local_i386_O0.o libm_names_amd64
+all: $(BINS) $(ASM_BINS) $(OBJ_BINS) x87_math_amd64 x87_ld_local_i386_O0.o x87_narrow_cond_i386_O1.o libm_names_amd64
 
 x87_math_amd64: x87_math.c
 	$(CC) $(X87_MATH_FLAGS) -o $@ $< -lm
@@ -58,6 +58,10 @@ libm_names_amd64: libm_names.c
 # x87 long double stack local (fstpt/fldt) narrowed to float
 x87_ld_local_i386_O0.o: x87_ld_local.c
 	$(CC) -O0 -m32 -mfpmath=387 -fno-pic -c -o $@ $<
+
+# float arithmetic narrowed inside double expressions: a branch condition, a constant added, an int divisor
+x87_narrow_cond_i386_O1.o: x87_narrow_cond.c
+	$(CC) -O1 -m32 -mfpmath=387 -fno-pic -c -o $@ $<
 
 fp_basic_i386_O0: $(SRC)
 	$(CC) -O0 $(I386_FLAGS) -o $@ $<
