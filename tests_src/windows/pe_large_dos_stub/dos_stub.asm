@@ -1,8 +1,8 @@
 ; A real-mode DOS program used as the stub of a PE test fixture.
 ;
-; Open Watcom's wasm and wlink emit the MZ object and executable headers. The
-; initialized data makes the linked stub larger than 4 KiB without reserving
-; space in BSS or modifying the executable after linking.
+; wasm emits an OMF object, and wlink emits the MZ executable. The initialized
+; data makes the linked stub larger than 4 KiB without reserving space in BSS
+; or modifying the executable after linking.
 
         .8086
 

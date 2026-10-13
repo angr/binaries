@@ -1,8 +1,8 @@
-# Rebuild the PE fixture whose genuine DOS stub places e_lfanew beyond 4 KiB.
+# Rebuild the PE fixture whose real-mode DOS stub places e_lfanew beyond 4 KiB.
 #
-# Open Watcom is pinned to the same nixpkgs revision as tests_src/dos. clang
-# and lld-link come from the workspace's pinned development environment. Both
-# programs are freestanding and link no runtime or SDK libraries.
+# Open Watcom is pinned to the same nixpkgs revision as tests_src/dos. Run this
+# Makefile in the workspace development environment for its pinned clang and
+# lld-link. The stub and PE entry point link no runtime or SDK libraries.
 
 NIXPKGS := github:NixOS/nixpkgs/42f17a57f4f6e33b3de3dca0a2a5ea5233169d02
 OUTPUT := $(abspath ../../../tests/x86_64/windows/pe_large_dos_stub.exe)
