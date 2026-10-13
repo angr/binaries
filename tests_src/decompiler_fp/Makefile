@@ -238,3 +238,10 @@ all: sret_ptr_amd64.o
 
 sret_ptr_amd64.o: sret_ptr_amd64.s
 	nasm -f elf64 -o $@ $<
+
+# floating-point equality tests against +inf and -inf in an else-if chain, AArch64
+OBJ_BINS += fcmp_inf_aarch64.o
+all: fcmp_inf_aarch64.o
+
+fcmp_inf_aarch64.o: fcmp_inf.c
+	clang --target=aarch64-linux-gnu -O1 -ffreestanding -fno-asynchronous-unwind-tables -c -o $@ $<
