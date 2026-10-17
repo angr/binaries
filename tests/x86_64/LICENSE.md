@@ -38,3 +38,25 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
+
+The file `decompiler/gnutls_certtool_O0` is GnuTLS 3.7.8 `certtool`, derived from
+pinned DecBench revision `e5eb576d66ee36793b800a4dd45e291e0add4472` by
+removing debug sections with GNU `objcopy --strip-debug`. The public source
+artifact is pinned at:
+
+<https://huggingface.co/datasets/noelo-lab/decbench-dataset/blob/e5eb576d66ee36793b800a4dd45e291e0add4472/binaries/O0/gnutls/certtool>
+
+The source artifact has SHA-256
+`be6106508f70816a4c8f88786a1719f703c4b259a73609902308aff2e5aba026`; the
+committed derivative has SHA-256
+`8796fa118358142d7abd5c239a25e78063be225410afafdbb6659344f3e06a2a`.
+
+GnuTLS `src/certtool.c` is licensed under GPLv3 or later:
+
+```
+Copyright (C) 2003-2016 Free Software Foundation, Inc.
+Copyright (C) 2015-2019 Red Hat, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://www.gnu.org/licenses/>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+```
