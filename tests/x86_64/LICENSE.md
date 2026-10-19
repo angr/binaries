@@ -38,3 +38,20 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 ```
+
+The `paste` binary is from GNU coreutils 9.1 and has the following license:
+
+```
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+```
+
+It was derived from DecBench revision
+`4b42a0dc6158913db0648a9123e76d6ddd9ab9cf` at
+`binaries/O2-noinline/coreutils/paste`, then stripped of debug sections with
+`objcopy --strip-debug`. The source binary's SHA-256 digest is
+`9c32fa84a1260d50224c008180ababd41f47c8ba8e7d021671c6f6e93d964d92`;
+the resulting fixture's SHA-256 digest is
+`01fcdf629c4994d0fe733c10a92dc142909be74c9d8c9efe04b703ae6cbf103d`.
