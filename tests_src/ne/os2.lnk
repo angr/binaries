@@ -1,0 +1,8 @@
+system os2
+option quiet
+option description 'cle NE fixture'
+option map=os2.map
+name os2.exe
+file os2.obj
+import DOSWRITE DOSCALLS.138
+import DOSEXIT DOSCALLS.5
