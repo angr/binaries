@@ -1,0 +1,49 @@
+The file `callweb` is generated test input, not a copy of a third-party program.
+
+It is the output of a seeded, offline program generator: the `callweb` generator
+of the `gors-bins-generators` suite at recipe version `gen-1`, seed `callweb-s9`.
+The generator emits Rust source with a deliberately dense call graph, and it
+downloads nothing.
+
+Build:
+
+    rustc 1.98.0
+    target     armv7-unknown-linux-gnueabihf
+    flags      opt-level=z, panic=abort, lto=fat, codegen-units=1, strip
+    result     ELF32 little-endian EM_ARM, PIE, stripped, 289648 bytes
+    sha256     2e35cfc59b74d0af516875535ac1f6f915e1733327647c1fc52213be0c175da5
+
+`callweb` may be redistributed under the MIT license below, together with the
+terms the Rust project places on the standard-library code linked into it.
+
+The generated source is under the MIT license:
+
+    Copyright (c) 2026 The angr Project
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+Compiling that source statically links the Rust standard library as shipped with
+rustc 1.98.0, so this file carries code the Rust project distributes as well.
+All 40 of the `/rustc/<hash>/library/` source paths left in its panic metadata
+name commit 88d9e12ae178fab0fb5cc050a94da85685d449ea, which is release 1.98.0.
+The backtrace dependencies vendored into that standard library leave their
+version strings in the file too: addr2line 0.25.1, gimli 0.32.3, miniz_oxide
+0.8.9 and rustc-demangle 0.1.27. The Rust Project is dual-licensed under
+Apache 2.0 and MIT terms, and tracks the licenses of the components vendored
+into it in https://github.com/rust-lang/rust/blob/master/COPYRIGHT
