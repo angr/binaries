@@ -1,0 +1,6 @@
+LIBRARY kernel32.dll
+EXPORTS
+    ExitProcess@4
+    GetStdHandle@4
+    GetTickCount@0
+    WriteFile@20
