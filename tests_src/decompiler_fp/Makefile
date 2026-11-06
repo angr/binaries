@@ -258,3 +258,10 @@ fp_narrow_overflow_aarch64.bin: fp_narrow_overflow.c
 	clang --target=aarch64-none-elf -O1 -ffreestanding -fno-pic -c -o fp_narrow_overflow_aarch64.o $<
 	ld.lld --image-base=0 -Ttext=0 --oformat=binary -e narrow_big -o $@ fp_narrow_overflow_aarch64.o
 	rm -f fp_narrow_overflow_aarch64.o
+
+# a C++ function taking __float128 by value (SysV x86-64: one xmm register), its caller, and a callee with a C name
+OBJ_BINS += float128_arg_amd64.o
+all: float128_arg_amd64.o
+
+float128_arg_amd64.o: float128_arg.cpp
+	g++ -O1 -fno-inline -fno-omit-frame-pointer -fcf-protection=none -c -o $@ $<
