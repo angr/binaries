@@ -1,0 +1,5 @@
+LIBRARY coff_export_types.dll
+EXPORTS
+    exported_counter DATA
+    exported_function
+    forwarded_function = user32.MessageBoxA
