@@ -2,8 +2,14 @@
 """
 Builds the minimal COFF objects that cle's COFF loader tests use.
 
-No object emitted by a real toolchain in this repository has a long section name, a relocation
-field that wraps, or an ARM64 or ARMNT machine type, so these are assembled by hand.
+Most are assembled by hand, because no object a real toolchain emitted into this repository has
+a long section name, a relocation field that wraps, a relocation field positioned outside the
+section that owns it or outside the file, a relocation table pointer past the end of the file,
+or an ARM64 or ARMNT machine type.
+
+Two are not assembled at all. They are the first 512 and 2048 bytes of the tracked
+x86/fauxware.obj, cut at lengths that leave a header declaring a section table, or a symbol and
+string table, that the file no longer holds.
 """
 
 from __future__ import annotations
@@ -184,6 +190,66 @@ def build_reloc_rel32() -> bytes:
     return writer.build()
 
 
+def build_reloc_outside_section() -> bytes:
+    """
+    A relocation whose field lies past the end of the section that owns it, and so inside the
+    next section's raw data. The two sections hold different fill bytes, so a loader that
+    resolves the relocation against the whole file rewrites bytes of `.data` that no relocation
+    names.
+    """
+    writer = CoffObjectWriter()
+    text = writer.add_section(".text", b"\x90" * 16)
+    writer.add_section(".data", b"\xaa" * 16)
+    target = writer.add_symbol("_target", 8, text)
+    # .text holds 16 bytes, so offset 0x10 is the first byte of .data.
+    writer.add_relocation(text, 0x10, target, IMAGE_REL_I386_DIR32)
+    return writer.build()
+
+
+def build_reloc_outside_file() -> bytes:
+    """
+    A relocation whose field lies past the end of the whole object, not merely past its section.
+    A loader that adds the offset to the section's PointerToRawData without checking it reads and
+    writes an address that nothing maps.
+    """
+    writer = CoffObjectWriter()
+    text = writer.add_section(".text", b"\x90" * 16)
+    target = writer.add_symbol("_target", 8, text)
+    writer.add_relocation(text, 0x4000000, target, IMAGE_REL_I386_DIR32)
+    return writer.build()
+
+
+def build_reloc_table_past_file() -> bytes:
+    """
+    A section whose PointerToRelocations is past the end of the file. The object is otherwise
+    well formed, so the parser reaches the relocation table with everything else in range.
+    """
+    writer = CoffObjectWriter()
+    text = writer.add_section(".text", b"\x90" * 16)
+    target = writer.add_symbol("_target", 8, text)
+    writer.add_relocation(text, 0, target, IMAGE_REL_I386_DIR32)
+    data = bytearray(writer.build())
+    # PointerToRelocations follows the name and four dwords in the first section header. The
+    # writer always emits a pointer that is in range, which is why it is overwritten here.
+    struct.pack_into("<L", data, COFF_HEADER.size + struct.calcsize("<8sLLLL"), 0x4000000)
+    return bytes(data)
+
+
+def truncate(source: str, length: int):
+    """
+    Return a builder that cuts the first `length` bytes out of a tracked object.
+    """
+
+    def build() -> bytes:
+        with open(os.path.normpath(os.path.join(TESTS_DIR, source)), "rb") as f:
+            data = f.read()
+        if len(data) < length:
+            raise ValueError(f"{source} is {len(data)} bytes, too short to cut {length} from")
+        return data[:length]
+
+    return build
+
+
 def build_reloc_arm64() -> bytes:
     """
     One instance of each ARM64 relocation the backend implements. `target` and `aligned` are
@@ -273,6 +339,11 @@ OBJECTS = {
     "x86/coff_long_section_names.obj": build_long_section_names,
     "x86/coff_reloc_dir32.obj": build_reloc_dir32,
     "x86/coff_reloc_rel32.obj": build_reloc_rel32,
+    "x86/coff_reloc_outside_section.obj": build_reloc_outside_section,
+    "x86/coff_reloc_outside_file.obj": build_reloc_outside_file,
+    "x86/coff_reloc_table_past_file.obj": build_reloc_table_past_file,
+    "x86/coff_truncated_section_table.obj": truncate("x86/fauxware.obj", 512),
+    "x86/coff_truncated_symbol_table.obj": truncate("x86/fauxware.obj", 2048),
     "aarch64/coff_reloc_arm64.obj": build_reloc_arm64,
     "armel/coff_reloc_armnt.obj": build_reloc_armnt,
     "mips/coff_r4000.obj": build_unsupported_machine,
