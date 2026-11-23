@@ -1,0 +1,13 @@
+system windows
+option quiet
+option packcode=0
+segment type code moveable discardable
+option description 'cle NE fixture'
+option map=win16.map
+name win16.exe
+file win16.obj
+import INITTASK KERNEL.91
+import WAITEVENT KERNEL.WAITEVENT
+import INITAPP USER.5
+import MESSAGEBOX USER.1
+export ShowCaption
