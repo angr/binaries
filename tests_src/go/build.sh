@@ -45,7 +45,7 @@ STRIPPED_PROGS=${STRIPPED_PROGS:-"floatcmp floatnan floatret"}
 # 386 builds (one optimized build, go1.27.1 only)
 I386_PROGS=${I386_PROGS:-"recv strcat"}
 # 32-bit arm builds (one optimized build, go1.27.1 only)
-ARM_PROGS=${ARM_PROGS:-"maps"}
+ARM_PROGS=${ARM_PROGS:-"maps requests"}
 # programs whose shape needs go1.22 or older (one optimized amd64 build, go1.22.5 only)
 GO122_PROGS=${GO122_PROGS:-"defers"}
 # toolchains with older pclntab layouts: basics only, optimized and stripped; the empty default keeps
