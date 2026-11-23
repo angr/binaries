@@ -22,6 +22,7 @@ import os
 import shutil
 
 from elftools.elf.elffile import ELFFile
+from elftools.elf.sections import SymbolTableSection
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 TESTS = os.path.join(HERE, "..", "..", "tests", "ppc64")
@@ -39,8 +40,8 @@ def st_info_offsets(path: str, names: tuple[str, ...]) -> dict[str, int]:
     """File offset of each named dynamic symbol's st_info byte."""
     with open(path, "rb") as stream:
         dynsym = ELFFile(stream).get_section_by_name(".dynsym")
-        if dynsym is None:
-            raise SystemExit(f"{path} has no .dynsym")
+        if not isinstance(dynsym, SymbolTableSection):
+            raise SystemExit(f"{path} has no .dynsym symbol table")
         found = {}
         for index, symbol in enumerate(dynsym.iter_symbols()):
             if symbol.name in names:
