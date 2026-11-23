@@ -1,0 +1,95 @@
+Fixture: blink_main_countdown.elf
+Fixture SHA-256: 29efb122e62bbbd4edaf3aa5c429093cdc2183b91fa62dbf85a48aac08c12093
+
+This fixture contains the libopencm3 Nucleo-F411RE blink example and a
+statically linked subset of libopencm3. The application and library are free
+software licensed under the GNU Lesser General Public License, version 3 or
+(at your option) any later version (LGPL-3.0-or-later). The DecBench dataset's
+BSD-2-Clause license covers the dataset packaging; it does not replace these
+upstream terms.
+
+Prominent LGPL notice
+---------------------
+
+This binary uses libopencm3. libopencm3 and its use in this binary are covered
+by the GNU Lesser General Public License, version 3 or later. There is no
+warranty, including no implied warranty of merchantability or fitness for a
+particular purpose. Modification and reverse engineering for debugging a
+modified libopencm3 are permitted by the applicable license.
+
+The complete license documents accompanying this fixture are stored beside it:
+
+* `COPYING.LGPL3` — GNU LGPL version 3; SHA-256
+  `da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768`
+* `COPYING.GPL3` — GNU GPL version 3, incorporated by LGPL version 3;
+  SHA-256
+  `fc82ca8b6fdb18d4e3e85cfd8ab58d1bcd3f1b29abe782895abd91d64763f8e7`
+
+They are verbatim copies from pinned libopencm3 revision
+88e91c9a7cced8096c53fb942dcff1d7bdf6c91b. The authoritative pinned upstream
+copies are also available at:
+
+GNU LGPL version 3 upstream:
+https://github.com/libopencm3/libopencm3/blob/88e91c9a7cced8096c53fb942dcff1d7bdf6c91b/COPYING.LGPL3
+
+GNU GPL version 3 upstream:
+https://github.com/libopencm3/libopencm3/blob/88e91c9a7cced8096c53fb942dcff1d7bdf6c91b/COPYING.GPL3
+
+Copyright and source
+--------------------
+
+The application is `examples/stm32/f4/nucleo-f411re/blink/blink.c` from
+libopencm3-examples commit 15637e291b8ca228e35d5f657ed15f3b8958fa0c:
+https://github.com/libopencm3/libopencm3-examples/blob/15637e291b8ca228e35d5f657ed15f3b8958fa0c/examples/stm32/f4/nucleo-f411re/blink/blink.c
+
+Its copyright notice names:
+
+Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+Copyright (C) 2011 Stephen Caudle <scaudle@doceme.com>
+Copyright (c) 2015 Chuck McManis <cmcmanis@mcmanis.com>
+
+That examples revision pins its libopencm3 submodule to commit
+88e91c9a7cced8096c53fb942dcff1d7bdf6c91b. The unmodified, machine-readable
+Corresponding Source and build scripts are available at no charge in these
+pinned archives:
+
+https://github.com/libopencm3/libopencm3-examples/archive/15637e291b8ca228e35d5f657ed15f3b8958fa0c.tar.gz
+https://github.com/libopencm3/libopencm3/archive/88e91c9a7cced8096c53fb942dcff1d7bdf6c91b.tar.gz
+
+The ELF's DWARF identifies these linked source translation units:
+
+* examples/stm32/f4/nucleo-f411re/blink/blink.c
+* libopencm3/lib/stm32/common/gpio_common_all.c
+* libopencm3/lib/stm32/common/gpio_common_f0234.c
+* libopencm3/lib/stm32/common/rcc_common_all.c
+* libopencm3/lib/cm3/vector.c
+
+Their retained per-file notices additionally name Uwe Hermann, Ken Sarkies,
+Fergus Noble, Frantisek Burian, Piotr Esden-Tempski, and chrysn. The pinned
+source archives above retain the complete notices, headers, linker scripts, and
+build system needed to inspect, modify, and relink the firmware.
+
+Dataset and derivation
+----------------------
+
+Source dataset: DecBench Decompiler Benchmark Dataset
+Dataset revision: e5eb576d66ee36793b800a4dd45e291e0add4472
+Dataset card:
+https://huggingface.co/datasets/noelo-lab/decbench-dataset/blob/e5eb576d66ee36793b800a4dd45e291e0add4472/README.md
+Source binary:
+https://huggingface.co/datasets/noelo-lab/decbench-dataset/resolve/e5eb576d66ee36793b800a4dd45e291e0add4472/binaries/O2/libopencm3/blink.elf
+Source binary SHA-256: a9ed82e93019d41e488b5dae0ae0e6d57ae4de7aa5ffd6716ed911fc0d8aff28
+
+DecBench obtains `master` from the public libopencm3-examples repository with
+a depth-one clone, initializes the pinned libopencm3 submodule, and builds the
+STM32/F4 targets with its documented ARM GCC flags. The public recipe is:
+https://github.com/Noelo-Lab/decbench/blob/fe5990c6468692b1b9bcf6bd2415eea42fa9667e/projects/cps/libopencm3.toml
+
+The source ELF's DWARF records GNU C99 13.2.1 20231009 and the effective ARM
+options, including `-mthumb -mcpu=cortex-m4 -mfloat-abi=hard
+-mfpu=fpv4-sp-d16 -march=armv7e-m+fp -g -Os -O2 -std=c99 -fno-common
+-ffunction-sections -fdata-sections -fno-builtin`.
+
+This fixture was made from that source ELF with:
+
+    arm-none-eabi-strip --strip-all blink.elf -o blink_main_countdown.elf
