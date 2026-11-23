@@ -1,0 +1,114 @@
+# Build recompile-dataset binaries with MSVC on Windows.
+#
+# Triggers on changes to the dataset sources.  Compiles each source file
+# with cl.exe at multiple optimisation levels for both x86 and x64,
+# then commits the PE binaries back to the repository.
+#
+name: Build recompile-dataset (MSVC)
+
+on:
+  push:
+    paths:
+      - 'tests_src/recompile_dataset/**'
+  workflow_dispatch:  # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  build-msvc:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            outdir: tests/x86_64/recompile_dataset_pe
+          - arch: x86
+            outdir: tests/i386/recompile_dataset_pe
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build binaries
+        shell: cmd
+        env:
+          OUTDIR: ${{ matrix.outdir }}
+        run: |
+          setlocal enabledelayedexpansion
+          mkdir "%OUTDIR%" 2>nul
+
+          set SRCS=t1_control_flow t2_types t3_memory t4_calling t5_patterns
+          set OPTS=/O1 /O2 /Os /Ox
+          set COUNT=0
+          set FAIL=0
+
+          for %%S in (!SRCS!) do (
+            for %%O in (!OPTS!) do (
+              set "TAG=%%O"
+              set "TAG=!TAG:/=!"
+              set "NAME=%%S_msvc_!TAG!.exe"
+              echo Building !NAME! ...
+
+              cl.exe /nologo %%O /Zi /Fe:"!OUTDIR!\!NAME!" ^
+                tests_src\recompile_dataset\%%S.c ^
+                tests_src\recompile_dataset\dummy_main.c ^
+                /link /DEBUG /PDB:"!OUTDIR!\%%S_msvc_!TAG!.pdb"
+              if !errorlevel! equ 0 (
+                set /a COUNT+=1
+              ) else (
+                echo   FAILED: !NAME!
+                set FAIL=1
+              )
+            )
+          )
+
+          rem Clean up intermediate files in working directory
+          del /q *.obj 2>nul
+          del /q "!OUTDIR!\*.ilk" 2>nul
+
+          echo.
+          echo Built !COUNT! binaries.
+          if !FAIL! neq 0 (
+            echo Some builds failed.
+            exit /b 1
+          )
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: recompile-dataset-pe-${{ matrix.arch }}
+          path: ${{ matrix.outdir }}/
+
+  commit-binaries:
+    needs: build-msvc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download x64 binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: recompile-dataset-pe-x64
+          path: tests/x86_64/recompile_dataset_pe/
+
+      - name: Download x86 binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: recompile-dataset-pe-x86
+          path: tests/i386/recompile_dataset_pe/
+
+      - name: Commit binaries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tests/x86_64/recompile_dataset_pe/ tests/i386/recompile_dataset_pe/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "ci: rebuild MSVC recompile-dataset binaries [skip ci]"
+            git push
+          fi
